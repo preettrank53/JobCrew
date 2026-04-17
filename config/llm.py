@@ -1,21 +1,12 @@
-import os
-import sys
-
-# Add parent directory to sys path if run directly
-if __name__ == "__main__":
-    sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
 from crewai import LLM
-from config.settings import GEMINI_API_KEY
 
 def get_llm():
     """
-    Initializes and returns a new instance of the Google Gemini LLM.
+    Initializes and returns a new instance of the local Ollama LLM.
     """
     return LLM(
-        model="gemini/gemini-2.5-pro",
-        temperature=0.3,
-        api_key=GEMINI_API_KEY
+        model="ollama/phi",
+        base_url="http://localhost:11434"
     )
 
 # Module-level singleton
@@ -23,9 +14,11 @@ llm = get_llm()
 
 if __name__ == "__main__":
     # Test block
-    print("Testing LLM connection...")
+    print("Testing local Ollama LLM connection...")
     try:
         response = llm.call(messages=[{"role": "user", "content": "Respond with one word: ready"}])
         print(f"LLM Response: {response.strip()}")
     except Exception as e:
-        print(f"Error testing LLM: {e}")
+        print(f"Error testing LLM: {e}\n\n⚠️ IMPORTANT: Make sure the Ollama app is running on your computer and you have downloaded the model by typing 'ollama run phi' in your terminal.")
+
+
