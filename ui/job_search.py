@@ -2,6 +2,10 @@ import streamlit as st
 from tools import fetch_jobs
 
 def render_job_search_panel():
+    if not st.session_state.get('candidate_profile'):
+        st.warning("Please complete your candidate profile in the sidebar before searching for jobs.")
+        return
+        
     st.header("Search Government Jobs")
     
     col1, col2, col3 = st.columns([3, 2, 1])
@@ -19,18 +23,21 @@ def render_job_search_panel():
             with st.spinner("Fetching live jobs from USAJobs..."):
                 try:
                     jobs = fetch_jobs(keyword=keyword, location=location, results_per_page=results_per_page)
-                    st.session_state.jobs = jobs
-                    # Reset selected jobs
-                    st.session_state.selected_jobs = []
-                    # Clear checkbox states
-                    for key in list(st.session_state.keys()):
-                        if key.startswith("check_"):
-                            del st.session_state[key]
-                    st.success(f"Successfully fetched {len(jobs)} jobs.")
+                    if not jobs:
+                        st.warning("No jobs found. Try a broader keyword or remove the location filter.")
+                    else:
+                        st.session_state.jobs = jobs
+                        st.session_state.selected_jobs = []
+                        for key in list(st.session_state.keys()):
+                            if key.startswith("check_"):
+                                del st.session_state[key]
+                        st.success(f"Successfully fetched {len(jobs)} jobs.")
                 except Exception as e:
                     st.error(f"Error fetching jobs: {str(e)}")
 
-    if st.session_state.jobs:
+    if not st.session_state.get('jobs'):
+        st.markdown("<p style='text-align: center; color: gray; margin-top: 2rem;'>No jobs to display. Use the search bar above to find target positions.</p>", unsafe_allow_html=True)
+    else:
         st.header("Available Positions")
         st.write(f"Total jobs fetched: {len(st.session_state.jobs)}")
         
@@ -64,7 +71,16 @@ def render_job_search_panel():
                     
         st.session_state.selected_jobs = current_selected
 
-    if st.session_state.selected_jobs:
+    if st.session_state.get('selected_jobs'):
         st.info(f"Selected Positions: {len(st.session_state.selected_jobs)}")
         for job in st.session_state.selected_jobs:
             st.markdown(f"- {job.get('title', 'Unknown')}")
+            
+    if st.session_state.get('jobs'):
+        if st.button("Clear Results"):
+            st.session_state.jobs = []
+            st.session_state.selected_jobs = []
+            for key in list(st.session_state.keys()):
+                if key.startswith("check_"):
+                    del st.session_state[key]
+            st.rerun()

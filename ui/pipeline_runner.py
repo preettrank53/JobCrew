@@ -43,37 +43,51 @@ def render_pipeline_runner():
         st.warning("Missing: Please complete and save your Candidate Profile in the sidebar (Name, Work Experience, Key Skills, and Education required).")
         
     if not missing_jobs and not missing_profile:
-        if st.button("⚡Run JobCrew Pipeline", use_container_width=True):
+        if st.button("Run JobCrew Pipeline", use_container_width=True):
             st.session_state.pipeline_running = True
+            all_successful = True
             
-            for job in selected_jobs:
-                job_id = job.get('job_id', 'unknown')
-                job_title = job.get('title', 'Unknown Title')
-                
-                with st.status(f"Processing: {job_title}", expanded=True) as status:
-                    try:
-                        st.write("Analyzing job requirements...")
-                        st.write("Tailoring resume and cover letter...")
-                        st.write("💬 Drafting LinkedIn message...")
-                        
-                        result = run_jobcrew_pipeline(job_data=job, candidate_profile=profile)
-                        st.session_state.results[job_id] = result
-                        save_results_to_log(job_id, result)
-                        
-                        status.update(label=f"Completed: {job_title}", state="complete", expanded=False)
-                    except Exception as e:
-                        status.update(label=f"Error processing {job_title}", state="error", expanded=False)
-                        st.error(f"Pipeline error: {str(e)}")
+            try:
+                for job in selected_jobs:
+                    job_id = job.get('job_id', 'unknown')
+                    job_title = job.get('title', 'Unknown Title')
+                    
+                    with st.status(f"Processing: {job_title}", expanded=True) as status:
+                        try:
+                            st.write("Analyzing job requirements...")
+                            st.write("Tailoring resume and cover letter...")
+                            st.write("Drafting LinkedIn message...")
+                            
+                            result = run_jobcrew_pipeline(job_data=job, candidate_profile=profile)
+                            st.session_state.results[job_id] = result
+                            save_results_to_log(job_id, result)
+                            
+                            status.update(label=f"Completed: {job_title}", state="complete", expanded=False)
+                        except Exception as e:
+                            status.update(label=f"Error processing {job_title}", state="error", expanded=False)
+                            st.error(f"Pipeline error: {str(e)}")
+                            all_successful = False
+            except Exception as global_e:
+                st.error("An unexpected global error occurred during pipeline execution.")
+                with st.expander("Error Details"):
+                    st.write(str(global_e))
+                all_successful = False
             
             st.session_state.pipeline_running = False
+            
+            if all_successful and selected_jobs:
+                st.balloons()
+
+    if not st.session_state.get('results') and not st.session_state.get('pipeline_running', False):
+        st.markdown("<p style='text-align: center; color: gray; margin-top: 2rem;'>No results yet - select jobs and run the pipeline to generate your application materials.</p>", unsafe_allow_html=True)
 
     if st.session_state.get('results'):
         st.header("Generated Application Materials")
         
         for job_id, result in st.session_state.results.items():
-            st.subheader(f"{result.get('job_title', 'Unknown')} — {result.get('department', 'Unknown')}")
+            st.subheader(f"{result.get('job_title', 'Unknown')} - {result.get('department', 'Unknown')}")
             
-            tab1, tab2, tab3 = st.tabs(["Job Analysis", "Resume & Cover Letter", "💬 LinkedIn Message"])
+            tab1, tab2, tab3 = st.tabs(["Job Analysis", "Resume & Cover Letter", "LinkedIn Message"])
             
             with tab1:
                 st.markdown(result.get('job_analysis', ''))
@@ -99,3 +113,7 @@ def render_pipeline_runner():
                     mime="text/plain",
                     key=f"dl_linkedin_{job_id}"
                 )
+                
+        if st.button("Clear All Results"):
+            st.session_state.results = {}
+            st.rerun()

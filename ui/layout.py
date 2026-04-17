@@ -23,3 +23,13 @@ def initialize_session_state():
         st.session_state.results = {}
     if "pipeline_running" not in st.session_state:
         st.session_state.pipeline_running = False
+
+def render_workflow_guide():
+    if not st.session_state.get("candidate_profile"):
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            st.info("Step 1 - Fill your candidate profile in the sidebar")
+        with col2:
+            st.info("Step 2 - Search and select target job positions")
+        with col3:
+            st.info("Step 3 - Run the pipeline to generate materials")
