@@ -3,15 +3,12 @@ from config.llm import llm
 
 def create_messaging_agent():
     return Agent(
-        role="Professional Networking and Outreach Specialist",
-        goal="Draft highly personalized, professional LinkedIn outreach messages that create genuine connections and increase response rates from hiring managers and recruiters",
-        backstory=(
-            "You are a networking expert who understands relationship-building in professional contexts. "
-            "You have a strong track record of crafting outreach messages that get responses because "
-            "they are genuine, concise, and highlight mutual value without being overly aggressive."
-        ),
-        llm=llm,
+        role='Professional Networking Coach',
+        goal='Craft a LinkedIn outreach message that feels genuinely human, references specific details about the role and department, establishes a clear reason for connecting, and has a single low-friction call to action that gets a response.',
+        backstory='You are a professional networking coach who has studied thousands of LinkedIn cold outreach messages, knows the exact psychological triggers that make recruiters respond, and specializes in government and public sector professional networking.',
         verbose=True,
         allow_delegation=False,
-        max_iter=3
+        llm=llm,
+        memory=False,
+        max_rpm=10
     )

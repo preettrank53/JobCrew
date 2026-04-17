@@ -1,29 +1,19 @@
-import json
 from crewai import Task
 
 def create_job_analysis_task(agent, job_data):
-    job_data_str = json.dumps(job_data, indent=2)
-    
     return Task(
-        description=(
-            "Analyze the following job listing data thoroughly.\n\n"
-            f"Job Data:\n{job_data_str}\n\n"
-            "Extract the following information:\n"
-            "1. Required skills\n"
-            "2. Preferred qualifications\n"
-            "3. Key responsibilities\n"
-            "4. Experience level\n"
-            "5. Education requirements\n"
-            "6. Department culture signals"
-        ),
-        expected_output=(
-            "A clearly structured plain text report with labeled sections for each extracted category:\n"
-            "- Required Skills\n"
-            "- Preferred Qualifications\n"
-            "- Key Responsibilities\n"
-            "- Experience Level\n"
-            "- Education Requirements\n"
-            "- Department Culture Signals"
-        ),
+        description=f"""Analyze the following federal job description and produce output in exactly these labeled sections:
+- ## POSITION OVERVIEW — job title, department, grade level, location, salary range, closing date
+- ## MANDATORY REQUIREMENTS — education, experience, certifications listed as bullet points
+- ## PREFERRED QUALIFICATIONS — nice-to-have skills and experience as bullet points
+- ## KEY RESPONSIBILITIES — top five to seven duties extracted from the description
+- ## CRITICAL KEYWORDS — ATS-relevant keywords and phrases the resume must contain
+- ## CULTURE & ENVIRONMENT SIGNALS — tone, team size hints, mission focus, work style indicators
+- ## APPLICATION STRATEGY — two to three sentences on how to position the candidate for this specific role
+
+Job Data:
+{job_data}
+""",
+        expected_output="A structured markdown report with all seven sections populated, no section left empty, using only information found in the provided job data.",
         agent=agent
     )

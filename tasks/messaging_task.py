@@ -1,22 +1,20 @@
-import json
 from crewai import Task
 
-def create_messaging_task(agent, job_data, candidate_profile):
-    job_data_str = json.dumps(job_data, indent=2)
-    candidate_profile_str = json.dumps(candidate_profile, indent=2)
-    
-    role_title = job_data.get('title', 'the open role')
-    department = job_data.get('department', 'your department')
-    
+def create_messaging_task(agent, candidate_profile, job_data):
     return Task(
-        description=(
-            f"Draft a concise LinkedIn outreach message regarding the '{role_title}' position in the '{department}'.\n\n"
-            f"Job Listing Details:\n{job_data_str}\n\n"
-            f"Candidate Profile:\n{candidate_profile_str}\n\n"
-            "Write a highly personalized, professional LinkedIn message (under 300 words). "
-            "The message should reference the specific role, the department, and express a genuine reason for interest "
-            "based on the candidate's profile. End with a polite call to action for a brief chat."
-        ),
-        expected_output="A single plain text LinkedIn outreach message under 300 words.",
+        description=f"""Using the candidate profile and the job analysis provided below, produce output in exactly these labeled sections:
+- ## LINKEDIN MESSAGE — the actual outreach message, strictly under 300 words, with a personalized opening referencing the specific department and role, a middle section connecting the candidate's background to the mission, and a closing with one specific question or call to action
+- ## SUBJECT LINE — a concise compelling connection request note under 200 characters
+- ## FOLLOW-UP MESSAGE — a short follow-up message to send if no response after one week, under 150 words
+
+CRITICAL INSTRUCTION: Avoid generic phrases like "I came across your posting" — every sentence must reference a specific detail from the job data injected into the prompt.
+
+Candidate Profile:
+{candidate_profile}
+
+Job Data:
+{job_data}
+""",
+        expected_output="A LinkedIn message, subject line, and follow-up message formatted exactly as requested.",
         agent=agent
     )

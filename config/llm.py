@@ -1,12 +1,16 @@
+import os
 from crewai import LLM
+from dotenv import load_dotenv
+
+load_dotenv()
 
 def get_llm():
     """
-    Initializes and returns a new instance of the local Ollama LLM.
+    Initializes and returns a new instance of the Groq API LLM.
     """
     return LLM(
-        model="ollama/llama3.2",
-        base_url="http://localhost:11434"
+        model="groq/llama-3.3-70b-versatile",
+        api_key=os.getenv("GROQ_API_KEY", "your-key-here")
     )
 
 # Module-level singleton
@@ -14,11 +18,9 @@ llm = get_llm()
 
 if __name__ == "__main__":
     # Test block
-    print("Testing local Ollama LLM connection...")
+    print("Testing Groq LLM connection...")
     try:
         response = llm.call(messages=[{"role": "user", "content": "Respond with one word: ready"}])
         print(f"LLM Response: {response.strip()}")
     except Exception as e:
-        print(f"Error testing LLM: {e}\n\n⚠️ IMPORTANT: Make sure the Ollama app is running on your computer and you have downloaded the model by typing 'ollama run llama3.2' in your terminal.")
-
-
+        print(f"Error testing LLM: {e}\n\n⚠️ IMPORTANT: Ensure your GROQ_API_KEY is correctly added to your .env file.")

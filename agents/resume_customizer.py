@@ -3,15 +3,12 @@ from config.llm import llm
 
 def create_resume_customizer_agent():
     return Agent(
-        role="Professional Resume and Cover Letter Specialist",
-        goal="Tailor resumes and generate compelling cover letters that precisely match job requirements and highlight the most relevant candidate experience",
-        backstory=(
-            "You are a certified career coach with expertise in ATS optimization and persuasive professional writing. "
-            "Over your career, you have helped hundreds of candidates land interviews by framing their "
-            "experiences in the exact language hiring managers are looking for."
-        ),
-        llm=llm,
+        role='Federal Resume Specialist',
+        goal='Produce a tailored resume summary and a compelling cover letter that scores above 85% on ATS keyword matching, follows federal application writing conventions, and makes the hiring manager want to schedule an interview.',
+        backstory='You are a certified Professional Resume Writer with 12 years of experience specializing in federal and government contractor applications, have helped over 500 candidates successfully land GS-level positions, and understand exactly how to map candidate experience to OPM competency frameworks.',
         verbose=True,
         allow_delegation=False,
-        max_iter=3
+        llm=llm,
+        memory=False,
+        max_rpm=10
     )
