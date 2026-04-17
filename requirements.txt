@@ -1,0 +1,7 @@
+crewai
+langchain
+langchain-google-genai
+streamlit
+python-dotenv
+requests
+pydantic
