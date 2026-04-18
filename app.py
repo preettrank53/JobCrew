@@ -14,12 +14,10 @@ def main():
         from startup_check import run_startup_checks
         check_results = run_startup_checks()
         if check_results["errors"]:
-            import streamlit as st
             for err in check_results["errors"]:
                 st.error(err)
             st.stop()
         if check_results["warnings"]:
-            import streamlit as st
             for warn in check_results["warnings"]:
                 st.warning(warn)
     except Exception as e:
