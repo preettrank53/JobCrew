@@ -3,13 +3,29 @@ from ui.layout import set_page_config, render_header, initialize_session_state, 
 from ui.sidebar import render_sidebar
 from ui.job_search import render_job_search_panel
 from ui.pipeline_runner import render_pipeline_runner
-from ui.styles import inject_custom_css, render_metric_bar, render_footer
+from ui.styles import render_metric_bar, render_footer
 from ui.tracker_dashboard import render_tracker_dashboard
 
 set_page_config()
 
 def main():
-    inject_custom_css()
+    # Run startup checks
+    try:
+        from startup_check import run_startup_checks
+        check_results = run_startup_checks()
+        if check_results["errors"]:
+            import streamlit as st
+            for err in check_results["errors"]:
+                st.error(err)
+            st.stop()
+        if check_results["warnings"]:
+            import streamlit as st
+            for warn in check_results["warnings"]:
+                st.warning(warn)
+    except Exception as e:
+        # Fallback if startup_check is missing or failing
+        pass
+
     initialize_session_state()
     render_sidebar()
     

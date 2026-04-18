@@ -6,3 +6,4 @@ logs/
 .venv/
 venv/
 requirements_freeze.txt
+.streamlit/secrets.toml
