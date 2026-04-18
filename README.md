@@ -1,93 +1,142 @@
 # JobCrew
 
-## Project Overview
+AI-Powered Job Application Assistant — Built with CrewAI, LangChain & Groq
 
-JobCrew is an autonomous, multi-agent artificial intelligence application designed to streamline the federal job application process. By integrating directly with the USAJobs API, the system allows users to search for live government positions and automatically generates tailored application materials. 
+![Python](https://img.shields.io/badge/Python-3.11-blue) ![Streamlit](https://img.shields.io/badge/Streamlit-1.x-red) ![CrewAI](https://img.shields.io/badge/CrewAI-Multi--Agent-green) ![Deployed](https://img.shields.io/badge/Deployed-Live-brightgreen) ![License](https://img.shields.io/badge/License-MIT-yellow)
 
-The core engine relies on a sequential pipeline of specialized AI agents that analyze job requirements, customize resumes and cover letters, and draft professional outreach messages. The system runs entirely locally using Ollama, ensuring data privacy and eliminating API costs.
+## [Live Demo → jobcrew.streamlit.app](https://jobcrew.streamlit.app)
 
-## Architecture and Agents
+JobCrew is an intelligent, multi-agent AI system designed to streamline the federal job application process. By leveraging advanced large language models via Groq, it automates the tedious tasks of job analysis, resume tailoring, and outreach preparation. This tool is built for career-driven individuals targeting federal positions who need high-quality, ATS-optimized application materials generated in seconds.
 
-JobCrew utilizes a CrewAI orchestration pipeline consisting of three distinct agents:
+## Key Features
+* live job fetching
+* AI multi-agent pipeline
+* resume upload auto-fill
+* one-click material generation
+* application tracker with status management
+* persistent logging
 
-1. **Job Analyzer Agent**: Ingests raw job description data from the USAJobs API and extracts structured requirements, including necessary skills, required education, and organizational culture signals.
-2. **Resume Customizer Agent**: Receives the structured analysis and the user's candidate profile to draft a highly tailored resume summary and a targeted cover letter.
-3. **Messaging Agent**: Analyzes the job context and candidate profile to draft a professional, concise outreach message suitable for networking.
+## Architecture
 
-## Prerequisites
+The JobCrew pipeline uses a multi-agent system to handle the complex workflow of job application preparation. By delegating specific responsibilities to specialized agents, the system ensures that each phase of the process—from requirement extraction to document generation—is handled with high precision and contextual awareness.
 
-Before installing the application, ensure the following dependencies are installed on your system:
+```
+USAJobs API → Job Listings → User Selection
+                                    ↓
+                        ┌─────────────────────┐
+                        │   CrewAI Pipeline    │
+                        │                     │
+                        │  Job Analyzer       │
+                        │         ↓           │
+                        │  Resume Agent       │
+                        │         ↓           │
+                        │   Messaging Agent   │
+                        └─────────────────────┘
+                                    ↓
+                  Resume + Cover Letter + LinkedIn Message
+```
 
-- Python 3.10 or higher
-- Ollama (installed and running locally)
-- Llama 3.2 model downloaded via Ollama
+## 🛠️ Tech Stack
 
-## Installation
+| Category | Technology | Version | Purpose |
+| :--- | :--- | :--- | :--- |
+| Agent Framework | CrewAI | 1.14.2 | Multi-agent orchestration and coordination |
+| LLM Provider | Groq | 0.37.1 | Fast, high-quality inference using Llama 3 models |
+| Web Interface | Streamlit | 1.56.0 | Interactive dashboard and UI components |
+| Data Validation | Pydantic | 2.11.10 | Strong typing and schema enforcement |
 
-Follow these steps to set up the project locally:
+## Getting Started
 
-1. **Clone the repository:**
-   ```bash
-   git clone <repository_url>
-   cd JobCrew
-   ```
+### Prerequisites
+* Python 3.11+
+* [Gemini API Key](https://aistudio.google.com/app/apikey) (Note: Groq is used as the primary LLM provider, but the system supports Gemini fallback)
+* [USAJobs API Key](https://developer.usajobs.gov/API-Request)
 
-2. **Create and activate a virtual environment:**
-   ```bash
-   python -m venv .venv
-   # On Windows:
-   .\.venv\Scripts\activate
-   # On macOS/Linux:
-   source .venv/bin/activate
-   ```
+### Local Installation
+1. Clone the repository
+2. Create and activate a virtual environment
+3. Install dependencies with `pip install -r requirements.txt`
+4. Copy `.env.example` to `.env` and fill in API keys
+5. Run with `streamlit run app.py`
 
-3. **Install the required Python packages:**
-   ```bash
-   pip install -r requirements.txt
-   ```
+### Environment Variables
 
-4. **Configure environment variables:**
-   Create a `.env` file in the root directory and add your USAJobs API credentials:
-   ```env
-   USAJOBS_API_KEY=your_api_key_here
-   USAJOBS_USER_AGENT=your_email@example.com
-   ```
+| Variable | Required | Source |
+| :--- | :--- | :--- |
+| GROQ_API_KEY | Yes | [Groq Console](https://console.groq.com/keys) |
+| USAJOBS_API_KEY | Yes | [USAJobs Developer Portal](https://developer.usajobs.gov/) |
+| USAJOBS_USER_AGENT | Yes | Your registered email address |
 
-5. **Download the local language model:**
-   Ensure the Ollama application is running on your machine, then execute:
-   ```bash
-   ollama run llama3.2
-   ```
+## How to Use JobCrew
 
-## Usage Instructions
+1. **Step 1 — Set up your candidate profile (manually or via resume upload)** 👤
+2. **Step 2 — Search for government jobs using keywords** 🔍
+3. **Step 3 — Select target positions and run the pipeline** 🚀
+4. **Step 4 — Review, download, and track your applications** 📝
 
-To launch the application interface:
-
-1. Activate your virtual environment if it is not already active.
-2. Start the Streamlit application:
-   ```bash
-   streamlit run app.py
-   ```
-3. Open your web browser and navigate to the local URL provided by Streamlit (typically `http://localhost:8501`).
-4. **Step 1**: Complete and save your Candidate Profile in the left sidebar.
-5. **Step 2**: Search for government jobs using keywords and locations in the main panel. Select the positions you wish to apply for.
-6. **Step 3**: Click the Run Pipeline button to execute the multi-agent workflow. The system will process each selected job and present the generated materials in organized tabs for review and download.
+### Fast Mode
+The Fast Mode toggle reduces the number of agent iterations and optimizes prompts for speed. This is ideal for quickly generating initial drafts or processing multiple job listings in a single session.
 
 ## Project Structure
 
-- `app.py`: The main entry point for the Streamlit web application.
-- `crew.py`: The orchestration logic defining the CrewAI sequential process.
-- `agents/`: Contains the definitions and configurations for the AI agents.
-- `tasks/`: Contains the specific tasks assigned to the AI agents.
-- `tools/`: Contains utility scripts, including the USAJobs API integration.
-- `config/`: Contains the system settings and Language Model configuration.
-- `ui/`: Contains modular UI components for layout, sidebar, search, and results display.
-- `logs/`: Directory where generated application materials are automatically saved.
+```
+JobCrew/
+├── agents/             # AI agent definitions (Role, Goal, Backstory)
+├── config/             # LLM configurations and application settings
+├── tasks/              # Individual task definitions for the agents
+├── tools/              # Custom tools for job fetching and data processing
+├── tracker/            # Persistence logic for job application tracking
+├── ui/                 # Streamlit UI components and layout helpers
+├── app.py              # Main application entry point
+├── crew.py             # Pipeline orchestration and execution logic # Main workflow
+├── requirements.txt    # Production Python dependencies
+└── requirements-dev.txt # Local development and testing tools
+```
 
-## Contributing
+## AI Agents
 
-Contributions to JobCrew are welcome. Please ensure that any pull requests maintain the existing modular architecture and adhere to standard Python styling guidelines (PEP 8). Prior to submitting a pull request, verify that all UI components render correctly and that the agent pipeline executes without errors.
+| Agent | Role | Specialization | Output |
+| :--- | :--- | :--- | :--- |
+| Job Analyzer | Senior Federal Job Analyst | Requirements extraction | Structured Job Analysis |
+| Resume Agent | Executive Resume Tailor | Content tailoring | Tailored Resume & Cover Letter |
+| Messaging Agent | Networking Specialist | Outreach personalization | LinkedIn Message |
+
+## Deployment
+
+### Streamlit Cloud
+1. Push your repository to GitHub.
+2. Log in to Streamlit Cloud and click "New app".
+3. Select this repository and the `app.py` file.
+4. Go to App Settings > Secrets to add your environment variables.
+
+### Environment Secrets
+Add your secrets in the Streamlit secrets management using this TOML format:
+
+```toml
+[secrets]
+GROQ_API_KEY = "your-key-here"
+USAJOBS_API_KEY = "your-key-here"
+USAJOBS_USER_AGENT = "your-email@example.com"
+```
+
+Please note that the Streamlit Cloud filesystem is ephemeral; any data not saved to a persistent database or external storage will be lost when the application restarts.
+
+## Testing
+* Run the full test suite: `python tests/run_tests.py`
+* Generate coverage report: `python tests/generate_coverage_report.py`
+
+The testing strategy utilizes mocking for all external API calls (Groq and USAJobs) to ensure tests are fast, reliable, and do not incur API costs.
+
+## Known Limitations
+* Pipeline execution time can take 1-3 minutes due to agent reasoning.
+* Streamlit Cloud uses an ephemeral filesystem, meaning local logs are lost on restart.
+* The application currently supports single-user sessions without authentication.
+* USAJobs is currently the only integrated job source.
+
+## Author
+Built by [Your Name] — [Your LinkedIn URL] | [Your GitHub URL]
 
 ## License
+MIT License — feel free to use this project as a reference or starting point
 
-This project is licensed under the MIT License. See the LICENSE file for details.
+⭐ If you found this project useful, please consider starring the repository
