@@ -2,36 +2,24 @@ import streamlit as st
 import os
 import datetime
 from crew import run_jobcrew_pipeline
+from tools.output_formatter import format_output_for_display, format_output_for_download, calculate_quality_indicators
+import streamlit.components.v1 as components
 
-def save_results_to_log(job_id, result):
+def save_results_to_log(job_id, result, candidate_name):
     if not os.path.exists('logs'):
         os.makedirs('logs')
         
-    timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     log_path = os.path.join('logs', f"log_{job_id}.txt")
     
     with open(log_path, "w", encoding="utf-8") as f:
-        f.write(f"Timestamp: {timestamp}\n")
-        f.write(f"Job Title: {result.get('job_title', 'Unknown')}\n")
-        f.write(f"Department: {result.get('department', 'Unknown')}\n")
-        f.write("\n" + "="*50 + "\n")
-        f.write("JOB ANALYSIS\n")
-        f.write("="*50 + "\n\n")
-        f.write(result.get('job_analysis', ''))
-        f.write("\n\n" + "="*50 + "\n")
-        f.write("RESUME & COVER LETTER\n")
-        f.write("="*50 + "\n\n")
-        f.write(result.get('resume_and_cover_letter', ''))
-        f.write("\n\n" + "="*50 + "\n")
-        f.write("LINKEDIN MESSAGE\n")
-        f.write("="*50 + "\n\n")
-        f.write(result.get('linkedin_message', ''))
+        f.write(format_output_for_download(result, candidate_name))
 
 def render_pipeline_runner():
     st.header("Generate Application Materials")
     
     selected_jobs = st.session_state.get('selected_jobs', [])
     profile = st.session_state.get('candidate_profile', {})
+    candidate_name = profile.get('name', 'Applicant')
     
     missing_jobs = not selected_jobs
     missing_profile = not profile or not all(k in profile for k in ['name', 'experience', 'skills', 'education'])
@@ -60,7 +48,7 @@ def render_pipeline_runner():
                             
                             result = run_jobcrew_pipeline(job_data=job, candidate_profile=profile)
                             st.session_state.results[job_id] = result
-                            save_results_to_log(job_id, result)
+                            save_results_to_log(job_id, result, candidate_name)
                             
                             status.update(label=f"Completed: {job_title}", state="complete", expanded=False)
                         except Exception as e:
@@ -87,32 +75,43 @@ def render_pipeline_runner():
         for job_id, result in st.session_state.results.items():
             st.subheader(f"{result.get('job_title', 'Unknown')} - {result.get('department', 'Unknown')}")
             
+            indicators = calculate_quality_indicators(result)
+            i1, i2, i3 = st.columns(3)
+            i1.info(f"Job Analysis Quality: **{indicators['analysis_quality']['label']}**")
+            i2.info(f"Resume Quality: **{indicators['resume_quality']['label']}**")
+            i3.info(f"Messaging Quality: **{indicators['messaging_quality']['label']}**")
+            
             tab1, tab2, tab3 = st.tabs(["Job Analysis", "Resume & Cover Letter", "LinkedIn Message"])
             
             with tab1:
-                st.markdown(result.get('job_analysis', ''))
+                display_analysis = format_output_for_display(result.get('job_analysis', ''), 'analysis')
+                st.markdown(display_analysis)
+                st.caption(f"Quality: {indicators['analysis_quality']['score']}/{indicators['analysis_quality']['max_score']} sections detected")
                 
             with tab2:
-                resume_content = result.get('resume_and_cover_letter', '')
-                st.markdown(resume_content)
+                display_resume = format_output_for_display(result.get('resume_and_cover_letter', ''), 'resume')
+                st.markdown(display_resume)
+                st.caption(f"Quality: {indicators['resume_quality']['score']}/{indicators['resume_quality']['max_score']} checks passed")
+                
+                full_download = format_output_for_download(result, candidate_name)
                 st.download_button(
-                    label="Download",
-                    data=resume_content,
-                    file_name=f"coverletter_{job_id}.txt",
+                    label="Download All Materials",
+                    data=full_download,
+                    file_name=f"jobcrew_{candidate_name.replace(' ', '_')}_{job_id}.txt",
                     mime="text/plain",
-                    key=f"dl_resume_{job_id}"
+                    key=f"dl_all_{job_id}"
                 )
                 
             with tab3:
-                linkedin_content = result.get('linkedin_message', '')
-                st.markdown(linkedin_content)
-                st.download_button(
-                    label="Download",
-                    data=linkedin_content,
-                    file_name=f"linkedin_{job_id}.txt",
-                    mime="text/plain",
-                    key=f"dl_linkedin_{job_id}"
-                )
+                display_msg = format_output_for_display(result.get('linkedin_message', ''), 'messaging')
+                st.markdown(display_msg)
+                st.caption(f"Quality: {indicators['messaging_quality']['score']}/{indicators['messaging_quality']['max_score']} checks passed")
+                
+                if st.button("Copy to Clipboard", key=f"copy_{job_id}"):
+                    safe_msg = display_msg.replace('\\', '\\\\').replace('`', '\\`').replace('$', '\\$')
+                    js = f"<script>navigator.clipboard.writeText(`{safe_msg}`);</script>"
+                    components.html(js, height=0, width=0)
+                    st.success("Copied to clipboard!")
                 
         if st.button("Clear All Results"):
             st.session_state.results = {}

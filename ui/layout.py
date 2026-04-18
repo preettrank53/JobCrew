@@ -23,6 +23,10 @@ def initialize_session_state():
         st.session_state.results = {}
     if "pipeline_running" not in st.session_state:
         st.session_state.pipeline_running = False
+    if "viewing_application" not in st.session_state:
+        st.session_state.viewing_application = None
+    if "editing_status" not in st.session_state:
+        st.session_state.editing_status = None
 
 def render_workflow_guide():
     if not st.session_state.get("candidate_profile"):

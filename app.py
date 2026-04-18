@@ -4,6 +4,7 @@ from ui.sidebar import render_sidebar
 from ui.job_search import render_job_search_panel
 from ui.pipeline_runner import render_pipeline_runner
 from ui.styles import inject_custom_css, render_metric_bar, render_footer
+from ui.tracker_dashboard import render_tracker_dashboard
 
 set_page_config()
 
@@ -11,6 +12,9 @@ def main():
     inject_custom_css()
     initialize_session_state()
     render_sidebar()
+    
+    page = st.sidebar.radio("Navigation", options=["Job Search", "Application Tracker"])
+    
     render_header()
     render_workflow_guide()
     
@@ -20,9 +24,14 @@ def main():
     render_metric_bar(jobs_fetched, jobs_selected, materials_generated)
     
     st.divider()
-    render_job_search_panel()
-    st.divider()
-    render_pipeline_runner()
+    
+    if page == "Job Search":
+        render_job_search_panel()
+        st.divider()
+        render_pipeline_runner()
+    elif page == "Application Tracker":
+        render_tracker_dashboard()
+        
     render_footer()
 
 if __name__ == "__main__":
