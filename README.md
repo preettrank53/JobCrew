@@ -24,7 +24,7 @@ The JobCrew pipeline uses a multi-agent system to handle the complex workflow of
 USAJobs API → Job Listings → User Selection
                                     ↓
                         ┌─────────────────────┐
-                        │   CrewAI Pipeline    │
+                        │   CrewAI Pipeline   │
                         │                     │
                         │  Job Analyzer       │
                         │         ↓           │
@@ -36,7 +36,7 @@ USAJobs API → Job Listings → User Selection
                   Resume + Cover Letter + LinkedIn Message
 ```
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 | Category | Technology | Version | Purpose |
 | :--- | :--- | :--- | :--- |
@@ -69,10 +69,10 @@ USAJobs API → Job Listings → User Selection
 
 ## How to Use JobCrew
 
-1. **Step 1 — Set up your candidate profile (manually or via resume upload)** 👤
-2. **Step 2 — Search for government jobs using keywords** 🔍
-3. **Step 3 — Select target positions and run the pipeline** 🚀
-4. **Step 4 — Review, download, and track your applications** 📝
+1. **Step 1 — Set up your candidate profile (manually or via resume upload)** 
+2. **Step 2 — Search for government jobs using keywords** 
+3. **Step 3 — Select target positions and run the pipeline**
+4. **Step 4 — Review, download, and track your applications** 
 
 ### Fast Mode
 The Fast Mode toggle reduces the number of agent iterations and optimizes prompts for speed. This is ideal for quickly generating initial drafts or processing multiple job listings in a single session.
@@ -133,10 +133,7 @@ The testing strategy utilizes mocking for all external API calls (Groq and USAJo
 * The application currently supports single-user sessions without authentication.
 * USAJobs is currently the only integrated job source.
 
-## Author
-Built by [Your Name] — [Your LinkedIn URL] | [Your GitHub URL]
-
 ## License
-MIT License — feel free to use this project as a reference or starting point
+MIT License - feel free to use this project as a reference or starting point
 
 ⭐ If you found this project useful, please consider starring the repository
