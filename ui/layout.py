@@ -9,7 +9,7 @@ def set_page_config():
 
 def render_header():
     st.markdown("<h1 style='text-align: center;'>JobCrew</h1>", unsafe_allow_html=True)
-    st.markdown("<h4 style='text-align: center; color: gray;'>Your AI-powered job application assistant - powered by CrewAI & Google Gemini</h4>", unsafe_allow_html=True)
+    st.markdown("<h4 style='text-align: center; color: gray;'>Your AI-powered job application assistant - powered by CrewAI & Groq</h4>", unsafe_allow_html=True)
     st.divider()
 
 def initialize_session_state():
@@ -27,6 +27,10 @@ def initialize_session_state():
         st.session_state.viewing_application = None
     if "editing_status" not in st.session_state:
         st.session_state.editing_status = None
+    if "tracker_summary" not in st.session_state:
+        st.session_state.tracker_summary = None
+    if "refresh_tracker" not in st.session_state:
+        st.session_state.refresh_tracker = False
 
 def render_workflow_guide():
     if not st.session_state.get("candidate_profile"):

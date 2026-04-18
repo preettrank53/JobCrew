@@ -1,8 +1,10 @@
 import streamlit as st
 import os
 import datetime
+import time
 from crew import run_jobcrew_pipeline
 from tools.output_formatter import format_output_for_display, format_output_for_download, calculate_quality_indicators
+from tracker.log_reader import invalidate_applications_cache
 import streamlit.components.v1 as components
 
 def save_results_to_log(job_id, result, candidate_name):
@@ -13,6 +15,7 @@ def save_results_to_log(job_id, result, candidate_name):
     
     with open(log_path, "w", encoding="utf-8") as f:
         f.write(format_output_for_download(result, candidate_name))
+    invalidate_applications_cache()
 
 def render_pipeline_runner():
     st.header("Generate Application Materials")
@@ -30,10 +33,22 @@ def render_pipeline_runner():
     if missing_profile:
         st.warning("Missing: Please complete and save your Candidate Profile in the sidebar (Name, Work Experience, Key Skills, and Education required).")
         
+    if st.session_state.get('pipeline_running', False):
+        st.warning("Pipeline is already running — please wait for it to complete")
+        return
+
     if not missing_jobs and not missing_profile:
+        fast_mode = st.toggle("Fast Mode (quicker results, slightly less detail)", key="fast_mode_toggle")
+        st.caption("Fast mode uses lower token limits and fewer iterations -- recommended for testing")
+        
         if st.button("Run JobCrew Pipeline", use_container_width=True):
             st.session_state.pipeline_running = True
             all_successful = True
+            
+            start_time = time.time()
+            progress_bar = st.progress(0)
+            total_jobs = len(selected_jobs)
+            current_job_index = 0
             
             try:
                 for job in selected_jobs:
@@ -46,15 +61,20 @@ def render_pipeline_runner():
                             st.write("Tailoring resume and cover letter...")
                             st.write("Drafting LinkedIn message...")
                             
-                            result = run_jobcrew_pipeline(job_data=job, candidate_profile=profile)
+                            result = run_jobcrew_pipeline(job_data=job, candidate_profile=profile, fast_mode=fast_mode)
                             st.session_state.results[job_id] = result
                             save_results_to_log(job_id, result, candidate_name)
                             
+                            exec_time = result.get('execution_time_seconds', 0)
                             status.update(label=f"Completed: {job_title}", state="complete", expanded=False)
+                            st.caption(f"Completed in {exec_time}s")
                         except Exception as e:
                             status.update(label=f"Error processing {job_title}", state="error", expanded=False)
                             st.error(f"Pipeline error: {str(e)}")
                             all_successful = False
+                            
+                    current_job_index += 1
+                    progress_bar.progress(current_job_index / total_jobs)
             except Exception as global_e:
                 st.error("An unexpected global error occurred during pipeline execution.")
                 with st.expander("Error Details"):
@@ -62,6 +82,11 @@ def render_pipeline_runner():
                 all_successful = False
             
             st.session_state.pipeline_running = False
+            
+            end_time = time.time()
+            progress_bar.progress(1.0)
+            st.success("All jobs processed successfully")
+            st.caption(f"Pipeline completed in {end_time - start_time:.1f} seconds")
             
             if all_successful and selected_jobs:
                 st.balloons()

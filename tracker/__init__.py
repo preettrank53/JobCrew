@@ -4,7 +4,8 @@ from .log_reader import (
     get_all_applications,
     get_application_by_id,
     delete_application_log,
-    get_tracker_summary
+    get_tracker_summary,
+    invalidate_applications_cache
 )
 from .status_manager import (
     APPLICATION_STATUSES,
@@ -24,6 +25,7 @@ __all__ = [
     "get_application_by_id",
     "delete_application_log",
     "get_tracker_summary",
+    "invalidate_applications_cache",
     "APPLICATION_STATUSES",
     "get_status_file_path",
     "load_all_statuses",

@@ -1,6 +1,18 @@
 import json
+import hashlib
 from config.llm import llm
 from tools.resume_parser import parse_resume_file
+
+_profile_cache = {}
+
+def get_cached_profile_extraction(resume_text):
+    text_hash = hashlib.md5(resume_text.encode()).hexdigest()
+    if text_hash in _profile_cache:
+        return _profile_cache[text_hash]
+    
+    result = extract_profile_from_resume(resume_text)
+    _profile_cache[text_hash] = result
+    return result
 
 def extract_profile_from_resume(resume_text):
     prompt = f"""You are an expert resume parser. Your task is to extract four specific fields from the resume provided below.

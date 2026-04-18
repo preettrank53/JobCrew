@@ -33,7 +33,19 @@ def render_status_editor(log_id, job_title):
 def render_tracker_dashboard():
     st.header("Application Tracker")
     
-    summary = get_tracker_summary()
+    col_h1, col_h2 = st.columns([8, 2])
+    with col_h1:
+        st.write("")
+    with col_h2:
+        if st.button("🔄 Refresh", use_container_width=True):
+            st.session_state.refresh_tracker = True
+            st.rerun()
+            
+    if st.session_state.tracker_summary is None or st.session_state.refresh_tracker:
+        st.session_state.tracker_summary = get_tracker_summary()
+        st.session_state.refresh_tracker = False
+        
+    summary = st.session_state.tracker_summary
     total_apps = summary.get("total_applications", 0)
     
     # Split metrics into two rows to prevent text truncation

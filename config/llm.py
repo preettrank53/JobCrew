@@ -13,6 +13,18 @@ def get_llm():
         api_key=os.getenv("GROQ_API_KEY", "your-key-here")
     )
 
+def get_fast_llm():
+    """
+    Returns a fast LLM instance with lower temperature and reduced token limit.
+    Optimized for speed over detail.
+    """
+    return LLM(
+        model="groq/llama-3.3-70b-versatile",
+        api_key=os.getenv("GROQ_API_KEY", "your-key-here"),
+        temperature=0.1,
+        max_tokens=800
+    )
+
 # Module-level singleton
 llm = get_llm()
 

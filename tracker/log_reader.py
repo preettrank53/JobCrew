@@ -1,5 +1,9 @@
 import os
 import re
+import time
+
+_applications_cache = None
+_cache_timestamp = None
 
 def get_all_log_files():
     logs_dir = 'logs'
@@ -88,7 +92,18 @@ def parse_log_file(file_path):
         "file_size_kb": file_size_kb
     }
 
+def invalidate_applications_cache():
+    global _applications_cache, _cache_timestamp
+    _applications_cache = None
+    _cache_timestamp = None
+    print("[Cache] Applications cache invalidated")
+
 def get_all_applications():
+    global _applications_cache, _cache_timestamp
+    if _applications_cache is not None and _cache_timestamp is not None:
+        if (time.time() - _cache_timestamp) < 60:
+            return _applications_cache
+
     files = get_all_log_files()
     apps = []
     for f in files:
@@ -98,6 +113,8 @@ def get_all_applications():
             print(f"Warning: Failed to parse {f}: {e}")
             
     apps.sort(key=lambda x: x.get("generated_at", ""), reverse=True)
+    _applications_cache = apps
+    _cache_timestamp = time.time()
     return apps
 
 def get_application_by_id(log_id):
@@ -113,6 +130,7 @@ def delete_application_log(log_id):
         raise FileNotFoundError(f"Log file not found for ID: {log_id}")
         
     os.remove(file_path)
+    invalidate_applications_cache()
     return True
 
 def get_tracker_summary():

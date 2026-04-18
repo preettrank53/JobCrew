@@ -1,5 +1,6 @@
 import streamlit as st
-from tools.profile_extractor import build_profile_from_upload
+from tools.profile_extractor import get_cached_profile_extraction
+from tools.resume_parser import parse_resume_file
 
 def render_resume_upload_section():
     uploaded_file = st.file_uploader("Upload your resume", type=["pdf", "txt"], key="resume_uploader")
@@ -12,7 +13,8 @@ def render_resume_upload_section():
             
         with st.spinner("Reading resume and extracting profile with AI..."):
             try:
-                profile = build_profile_from_upload(uploaded_file)
+                resume_text = parse_resume_file(uploaded_file)
+                profile = get_cached_profile_extraction(resume_text)
                 st.session_state.candidate_profile = profile
                 st.success("Profile auto-filled from resume! Review and edit below if needed.")
                 st.rerun()

@@ -1,7 +1,7 @@
 import os
 import json
 import datetime
-from .log_reader import get_all_log_files
+from .log_reader import get_all_log_files, invalidate_applications_cache
 
 APPLICATION_STATUSES = {
     "not_applied": {"label": "Not Applied Yet", "emoji": "⏳"},
@@ -41,6 +41,7 @@ def save_status(log_id, status_key, notes=""):
         
     with open(get_status_file_path(), "w", encoding="utf-8") as f:
         json.dump(statuses, f, indent=2)
+    invalidate_applications_cache()
 
 def get_status(log_id):
     statuses = load_all_statuses()

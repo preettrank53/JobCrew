@@ -1,5 +1,5 @@
 import streamlit as st
-from tools import fetch_jobs
+from tools import fetch_jobs, clear_jobs_cache, get_cache_stats
 
 def render_job_search_panel():
     if not st.session_state.get('candidate_profile'):
@@ -15,6 +15,9 @@ def render_job_search_panel():
         location = st.text_input("Location", placeholder="e.g. Washington DC")
     with col3:
         results_per_page = st.number_input("Results per page", min_value=5, max_value=25, value=10)
+        
+    with st.expander("Cache Status"):
+        st.json(get_cache_stats())
         
     if st.button("Fetch Jobs", use_container_width=True):
         if not keyword.strip():
@@ -83,4 +86,8 @@ def render_job_search_panel():
             for key in list(st.session_state.keys()):
                 if key.startswith("check_"):
                     del st.session_state[key]
+            st.rerun()
+        if st.button("Clear API Cache"):
+            clear_jobs_cache()
+            st.success("API cache cleared")
             st.rerun()

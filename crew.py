@@ -1,12 +1,15 @@
+import time
+import concurrent.futures
 from crewai import Crew, Process
 from agents import create_job_analyzer_agent, create_resume_customizer_agent, create_messaging_agent
 from tasks import create_job_analysis_task, create_resume_task, create_messaging_task
+from config.settings import PIPELINE_TIMEOUT_SECONDS
 
-def run_jobcrew_pipeline(job_data, candidate_profile):
+def run_jobcrew_pipeline(job_data, candidate_profile, fast_mode=False):
     # Step 1: Instantiate agents
-    job_analyzer = create_job_analyzer_agent()
-    resume_customizer = create_resume_customizer_agent()
-    messaging_agent = create_messaging_agent()
+    job_analyzer = create_job_analyzer_agent(fast_mode=fast_mode)
+    resume_customizer = create_resume_customizer_agent(fast_mode=fast_mode)
+    messaging_agent = create_messaging_agent(fast_mode=fast_mode)
     
     # Step 2: Instantiate tasks in order
     task1 = create_job_analysis_task(agent=job_analyzer, job_data=job_data)
@@ -33,8 +36,21 @@ def run_jobcrew_pipeline(job_data, candidate_profile):
         process=Process.sequential
     )
     
-    # Step 4: Execute and return results
-    crew.kickoff()
+    # Step 4: Execute with timeout and timing
+    start_time = time.time()
+    
+    with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
+        future = executor.submit(crew.kickoff)
+        try:
+            future.result(timeout=PIPELINE_TIMEOUT_SECONDS)
+        except concurrent.futures.TimeoutError:
+            raise RuntimeError(
+                f"Pipeline timed out after {PIPELINE_TIMEOUT_SECONDS} seconds "
+                f"-- try fast mode or reduce selected jobs"
+            )
+    
+    end_time = time.time()
+    execution_time_seconds = round(end_time - start_time, 2)
     
     # Extract raw string outputs from each task
     job_analysis = task1.output.raw if task1.output else "No output generated"
@@ -46,7 +62,8 @@ def run_jobcrew_pipeline(job_data, candidate_profile):
         "resume_and_cover_letter": resume_and_cover_letter,
         "linkedin_message": linkedin_message,
         "job_title": job_data.get("title", "Unknown Title"),
-        "department": job_data.get("department", "Unknown Department")
+        "department": job_data.get("department", "Unknown Department"),
+        "execution_time_seconds": execution_time_seconds
     }
 
 if __name__ == "__main__":
@@ -78,6 +95,7 @@ if __name__ == "__main__":
             
             print("\n" + "="*50)
             print(f"PIPELINE COMPLETED FOR: {results['job_title']} at {results['department']}")
+            print(f"Execution Time: {results['execution_time_seconds']}s")
             print("="*50)
             print("\n[JOB ANALYSIS RESULT]\n")
             print(results['job_analysis'])
