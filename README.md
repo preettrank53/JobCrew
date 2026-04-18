@@ -2,6 +2,8 @@
 
 AI-Powered Job Application Assistant — Built with CrewAI, LangChain & Groq
 
+[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://jobcrew.streamlit.app)
+
 ![Python](https://img.shields.io/badge/Python-3.11-blue) ![Streamlit](https://img.shields.io/badge/Streamlit-1.x-red) ![CrewAI](https://img.shields.io/badge/CrewAI-Multi--Agent-green) ![Deployed](https://img.shields.io/badge/Deployed-Live-brightgreen) ![License](https://img.shields.io/badge/License-MIT-yellow)
 
 ## [Live Demo → jobcrew.streamlit.app](https://jobcrew.streamlit.app)
