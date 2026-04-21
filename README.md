@@ -6,7 +6,7 @@ AI-Powered Job Application Assistant — Built with CrewAI, LangChain & Groq
 
 ![Python](https://img.shields.io/badge/Python-3.11-blue) ![Streamlit](https://img.shields.io/badge/Streamlit-1.x-red) ![CrewAI](https://img.shields.io/badge/CrewAI-Multi--Agent-green) ![Deployed](https://img.shields.io/badge/Deployed-Live-brightgreen) ![License](https://img.shields.io/badge/License-MIT-yellow)
 
-## [Live Demo → jobcrew.streamlit.app](https://jobcrew.streamlit.app)
+## [Live Demo : jobcrew.streamlit.app](https://jobcrew.streamlit.app)
 
 JobCrew is an intelligent, multi-agent AI system designed to streamline the federal job application process. By leveraging advanced large language models via Groq, it automates the tedious tasks of job analysis, resume tailoring, and outreach preparation. This tool is built for career-driven individuals targeting federal positions who need high-quality, ATS-optimized application materials generated in seconds.
 
