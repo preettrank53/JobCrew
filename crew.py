@@ -4,12 +4,16 @@ from crewai import Crew, Process
 from agents import create_job_analyzer_agent, create_resume_customizer_agent, create_messaging_agent
 from tasks import create_job_analysis_task, create_resume_task, create_messaging_task
 from config.settings import PIPELINE_TIMEOUT_SECONDS
+from config.llm import get_user_llm
 
 def run_jobcrew_pipeline(job_data, candidate_profile, fast_mode=False):
-    # Step 1: Instantiate agents
-    job_analyzer = create_job_analyzer_agent(fast_mode=fast_mode)
-    resume_customizer = create_resume_customizer_agent(fast_mode=fast_mode)
-    messaging_agent = create_messaging_agent(fast_mode=fast_mode)
+    # Step 1: Resolve the user LLM (raises ValueError if no key is configured)
+    user_llm = get_user_llm(fast_mode=fast_mode)
+
+    # Step 2: Instantiate agents with user key
+    job_analyzer = create_job_analyzer_agent(fast_mode=fast_mode, llm=user_llm)
+    resume_customizer = create_resume_customizer_agent(fast_mode=fast_mode, llm=user_llm)
+    messaging_agent = create_messaging_agent(fast_mode=fast_mode, llm=user_llm)
     
     # Step 2: Instantiate tasks in order
     task1 = create_job_analysis_task(agent=job_analyzer, job_data=job_data)

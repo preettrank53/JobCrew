@@ -1,9 +1,9 @@
 from crewai import Agent
-from config.llm import llm, get_fast_llm
+from config.llm import get_llm, get_fast_llm
 from config.settings import MAX_AGENT_ITERATIONS, MAX_AGENT_RPM
 
-def create_messaging_agent(fast_mode=False):
-    agent_llm = get_fast_llm() if fast_mode else llm
+def create_messaging_agent(fast_mode=False, llm=None):
+    agent_llm = llm if llm else (get_fast_llm() if fast_mode else get_llm())
     agent_max_iter = 2 if fast_mode else MAX_AGENT_ITERATIONS
     
     return Agent(

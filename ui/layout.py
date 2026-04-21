@@ -31,6 +31,10 @@ def initialize_session_state():
         st.session_state.tracker_summary = None
     if "refresh_tracker" not in st.session_state:
         st.session_state.refresh_tracker = False
+    if "user_llm_key" not in st.session_state:
+        st.session_state.user_llm_key = ""
+    if "llm_provider" not in st.session_state:
+        st.session_state.llm_provider = "Groq (Free & Fast - Recommended)"
 
 def render_workflow_guide():
     if not st.session_state.get("candidate_profile"):

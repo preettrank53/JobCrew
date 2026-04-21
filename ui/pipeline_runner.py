@@ -19,23 +19,29 @@ def save_results_to_log(job_id, result, candidate_name):
 
 def render_pipeline_runner():
     st.header("Generate Application Materials")
-    
+
+    # Guard: require API key before proceeding
+    if not st.session_state.get("user_llm_key", "").strip():
+        st.warning("Please configure your LLM API key in the sidebar before running the pipeline.")
+        return
+
     selected_jobs = st.session_state.get('selected_jobs', [])
     profile = st.session_state.get('candidate_profile', {})
     candidate_name = profile.get('name', 'Applicant')
-    
+
     missing_jobs = not selected_jobs
     missing_profile = not profile or not all(k in profile for k in ['name', 'experience', 'skills', 'education'])
-    
+
     if missing_jobs:
         st.warning("Missing: Please select at least one job from the 'Available Positions' list above.")
-    
+
     if missing_profile:
-        st.warning("Missing: Please complete and save your Candidate Profile in the sidebar (Name, Work Experience, Key Skills, and Education required).")
-        
+        st.warning("Missing: Please complete and save your Candidate Profile in the sidebar.")
+
     if st.session_state.get('pipeline_running', False):
         st.warning("Pipeline is already running — please wait for it to complete")
         return
+
 
     if not missing_jobs and not missing_profile:
         fast_mode = st.toggle("Fast Mode (quicker results, slightly less detail)", key="fast_mode_toggle")
