@@ -48,7 +48,7 @@ def render_demo_banner():
         st.warning(get_demo_banner_html())
         st.info(
             "This is a demo with sample data. To use your real resume and real jobs, "
-            "exit demo mode and add your Groq API key — it is free at console.groq.com"
+            "exit demo mode and add your Groq API key - it is free at console.groq.com"
         )
 
 def render_workflow_guide():
