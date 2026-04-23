@@ -1,6 +1,7 @@
 import streamlit as st
 from tools.profile_extractor import get_cached_profile_extraction
 from tools.resume_parser import parse_resume_file
+from demo.demo_controller import is_demo_mode, activate_demo_mode, deactivate_demo_mode
 
 
 PROVIDER_GROQ = "Groq (Free & Fast - Recommended)"
@@ -14,6 +15,24 @@ PROVIDER_KEY_LABELS = {
     PROVIDER_GEMINI: ("Gemini API Key", "Get a key at aistudio.google.com"),
     PROVIDER_OPENAI: ("OpenAI API Key", "Get a key at platform.openai.com"),
 }
+
+
+def render_demo_toggle():
+    """Renders the Demo Mode launch / exit control at the top of the sidebar."""
+    if is_demo_mode():
+        st.sidebar.success("Demo Mode Active")
+        if st.sidebar.button("Exit Demo Mode", key="exit_demo_btn", use_container_width=True):
+            deactivate_demo_mode()
+    else:
+        st.sidebar.info(
+            "**Try JobCrew Instantly**\n\n"
+            "No API key needed — see a full demo with pre-loaded profile, "
+            "sample job listings, and simulated AI output."
+        )
+        if st.sidebar.button("Launch Demo Mode", key="launch_demo_btn", use_container_width=True):
+            activate_demo_mode()
+
+    st.sidebar.divider()
 
 
 def render_api_key_section():
@@ -85,6 +104,7 @@ def render_resume_upload_section():
 
 def render_sidebar():
     with st.sidebar:
+        render_demo_toggle()
         render_api_key_section()
 
         st.header("Your Profile")

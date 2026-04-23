@@ -3,14 +3,16 @@ import datetime
 
 
 
-def render_metric_bar(jobs_fetched, jobs_selected, materials_generated):
-    col1, col2, col3 = st.columns(3)
+def render_metric_bar(jobs_fetched, jobs_selected, materials_generated, demo_active=False):
+    col1, col2, col3, col4 = st.columns(4)
     with col1:
         st.metric("Jobs Fetched", jobs_fetched)
     with col2:
         st.metric("Positions Selected", jobs_selected)
     with col3:
         st.metric("Materials Generated", materials_generated)
+    with col4:
+        st.metric("Mode", "Demo" if demo_active else "Live")
 
 def render_footer():
     st.divider()

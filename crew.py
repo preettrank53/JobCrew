@@ -5,8 +5,13 @@ from agents import create_job_analyzer_agent, create_resume_customizer_agent, cr
 from tasks import create_job_analysis_task, create_resume_task, create_messaging_task
 from config.settings import PIPELINE_TIMEOUT_SECONDS
 from config.llm import get_user_llm
+from demo.demo_controller import is_demo_mode
 
 def run_jobcrew_pipeline(job_data, candidate_profile, fast_mode=False):
+    # Safety guard: prevent real API calls during demo sessions
+    if is_demo_mode():
+        raise RuntimeError("Pipeline called in demo mode — use run_demo_pipeline instead")
+
     # Step 1: Resolve the user LLM (raises ValueError if no key is configured)
     user_llm = get_user_llm(fast_mode=fast_mode)
 

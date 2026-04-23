@@ -6,31 +6,35 @@ from crew import run_jobcrew_pipeline
 from tools.output_formatter import format_output_for_display, format_output_for_download, calculate_quality_indicators
 from tracker.log_reader import invalidate_applications_cache
 import streamlit.components.v1 as components
+from demo.demo_controller import is_demo_mode, run_demo_pipeline
 
 def save_results_to_log(job_id, result, candidate_name):
-    if not os.path.exists('logs'):
-        os.makedirs('logs')
-        
-    log_path = os.path.join('logs', f"log_{job_id}.txt")
-    
+    if not os.path.exists("logs"):
+        os.makedirs("logs")
+
+    log_path = os.path.join("logs", f"log_{job_id}.txt")
+
     with open(log_path, "w", encoding="utf-8") as f:
         f.write(format_output_for_download(result, candidate_name))
     invalidate_applications_cache()
 
+
 def render_pipeline_runner():
     st.header("Generate Application Materials")
 
-    # Guard: require API key before proceeding
-    if not st.session_state.get("user_llm_key", "").strip():
+    demo = is_demo_mode()
+
+    # Guard: require API key only when NOT in demo mode
+    if not demo and not st.session_state.get("user_llm_key", "").strip():
         st.warning("Please configure your LLM API key in the sidebar before running the pipeline.")
         return
 
-    selected_jobs = st.session_state.get('selected_jobs', [])
-    profile = st.session_state.get('candidate_profile', {})
-    candidate_name = profile.get('name', 'Applicant')
+    selected_jobs = st.session_state.get("selected_jobs", [])
+    profile = st.session_state.get("candidate_profile", {})
+    candidate_name = profile.get("name", "Applicant")
 
     missing_jobs = not selected_jobs
-    missing_profile = not profile or not all(k in profile for k in ['name', 'experience', 'skills', 'education'])
+    missing_profile = not profile or not all(k in profile for k in ["name", "experience", "skills", "education"])
 
     if missing_jobs:
         st.warning("Missing: Please select at least one job from the 'Available Positions' list above.")
@@ -38,16 +42,16 @@ def render_pipeline_runner():
     if missing_profile:
         st.warning("Missing: Please complete and save your Candidate Profile in the sidebar.")
 
-    if st.session_state.get('pipeline_running', False):
+    if st.session_state.get("pipeline_running", False):
         st.warning("Pipeline is already running — please wait for it to complete")
         return
 
-
     if not missing_jobs and not missing_profile:
         fast_mode = st.toggle("Fast Mode (quicker results, slightly less detail)", key="fast_mode_toggle")
-        st.caption("Fast mode uses lower token limits and fewer iterations -- recommended for testing")
-        
-        if st.button("Run JobCrew Pipeline", use_container_width=True):
+        st.caption("Fast mode uses lower token limits and fewer iterations — recommended for testing")
+
+        run_label = "Run Demo Pipeline" if demo else "Run JobCrew Pipeline"
+        if st.button(run_label, use_container_width=True):
             st.session_state.pipeline_running = True
             all_successful = True
             
@@ -58,27 +62,31 @@ def render_pipeline_runner():
             
             try:
                 for job in selected_jobs:
-                    job_id = job.get('job_id', 'unknown')
-                    job_title = job.get('title', 'Unknown Title')
-                    
+                    job_id = job.get("job_id", "unknown")
+                    job_title = job.get("title", "Unknown Title")
+
                     with st.status(f"Processing: {job_title}", expanded=True) as status:
                         try:
-                            st.write("Analyzing job requirements...")
-                            st.write("Tailoring resume and cover letter...")
-                            st.write("Drafting LinkedIn message...")
-                            
-                            result = run_jobcrew_pipeline(job_data=job, candidate_profile=profile, fast_mode=fast_mode)
+                            if demo:
+                                result = run_demo_pipeline(status)
+                            else:
+                                st.write("Analyzing job requirements...")
+                                st.write("Tailoring resume and cover letter...")
+                                st.write("Drafting LinkedIn message...")
+                                result = run_jobcrew_pipeline(job_data=job, candidate_profile=profile, fast_mode=fast_mode)
+
                             st.session_state.results[job_id] = result
-                            save_results_to_log(job_id, result, candidate_name)
-                            
-                            exec_time = result.get('execution_time_seconds', 0)
+                            if not demo:
+                                save_results_to_log(job_id, result, candidate_name)
+
+                            exec_time = result.get("execution_time_seconds", 0)
                             status.update(label=f"Completed: {job_title}", state="complete", expanded=False)
                             st.caption(f"Completed in {exec_time}s")
                         except Exception as e:
                             status.update(label=f"Error processing {job_title}", state="error", expanded=False)
                             st.error(f"Pipeline error: {str(e)}")
                             all_successful = False
-                            
+
                     current_job_index += 1
                     progress_bar.progress(current_job_index / total_jobs)
             except Exception as global_e:
@@ -86,7 +94,7 @@ def render_pipeline_runner():
                 with st.expander("Error Details"):
                     st.write(str(global_e))
                 all_successful = False
-            
+
             st.session_state.pipeline_running = False
             
             end_time = time.time()
