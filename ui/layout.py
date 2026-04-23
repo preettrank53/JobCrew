@@ -42,10 +42,10 @@ def initialize_session_state():
 
 
 def render_demo_banner():
-    """Renders the amber demo-mode banner when Demo Mode is active."""
+    """Renders the demo-mode notice when Demo Mode is active."""
     from demo.demo_controller import is_demo_mode, get_demo_banner_html
     if is_demo_mode():
-        st.markdown(get_demo_banner_html(), unsafe_allow_html=True)
+        st.warning(get_demo_banner_html())
         st.info(
             "This is a demo with sample data. To use your real resume and real jobs, "
             "exit demo mode and add your Groq API key — it is free at console.groq.com"

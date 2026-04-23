@@ -82,18 +82,11 @@ def run_demo_pipeline(status_container) -> dict:
 # ---------------------------------------------------------------------------
 
 def get_demo_banner_html() -> str:
-    """Returns an inline-styled HTML banner indicating Demo Mode is active."""
+    """
+    Returns the demo mode notice as a plain string.
+    Callers should pass this to st.warning() — no custom HTML or CSS used.
+    """
     return (
-        "<div style='"
-        "background-color: #fffbea;"
-        "border: 1px solid #f0c040;"
-        "border-left: 4px solid #d4a017;"
-        "border-radius: 4px;"
-        "padding: 0.75rem 1rem;"
-        "margin-bottom: 0.5rem;"
-        "font-size: 0.9rem;"
-        "'>"
-        "<strong>Demo Mode</strong> — You are viewing pre-generated sample outputs. "
+        "Demo Mode — You are viewing pre-generated sample outputs. "
         "Add your API key in the sidebar to run the real pipeline."
-        "</div>"
     )
