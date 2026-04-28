@@ -1,6 +1,6 @@
 # JobCrew
 
-AI-Powered Job Application Assistant — Built with CrewAI, LangChain & Groq
+AI-Powered Job Application Assistant - Built with CrewAI, LangChain & Groq
 
 [![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://jobcrew.streamlit.app)
 
