@@ -7,7 +7,7 @@ tests_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'tests
 if tests_dir not in sys.path:
     sys.path.insert(0, tests_dir)
 
-from prompt_quality_test import score_job_analysis_output, score_resume_output, score_messaging_output
+from prompt_quality_test import score_job_analysis_output, score_resume_output, score_messaging_output, score_interview_prep_output
 
 def format_output_for_display(raw_output, output_type):
     raw_output = raw_output.strip() if raw_output else ""
@@ -67,16 +67,18 @@ def calculate_quality_indicators(result):
     ja_raw = result.get('job_analysis', '')
     res_raw = result.get('resume_and_cover_letter', '')
     msg_raw = result.get('linkedin_message', '')
-    
+    ip_raw = result.get('interview_prep', '')
+
     ja_score = score_job_analysis_output(ja_raw)
     res_score = score_resume_output(res_raw)
     msg_score = score_messaging_output(msg_raw)
-    
+    ip_score = score_interview_prep_output(ip_raw)
+
     def get_label(score, max_score, passed):
         if passed: return "Good"
         if score > (max_score / 2): return "Partial"
         return "Poor"
-        
+
     return {
         "analysis_quality": {
             "score": ja_score["score"],
@@ -95,5 +97,11 @@ def calculate_quality_indicators(result):
             "max_score": msg_score["max_score"],
             "passed": msg_score["passed"],
             "label": get_label(msg_score["score"], msg_score["max_score"], msg_score["passed"])
+        },
+        "interview_prep_quality": {
+            "score": ip_score["score"],
+            "max_score": ip_score["max_score"],
+            "passed": ip_score["passed"],
+            "label": get_label(ip_score["score"], ip_score["max_score"], ip_score["passed"])
         }
     }

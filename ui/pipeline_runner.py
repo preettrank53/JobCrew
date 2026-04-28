@@ -106,7 +106,7 @@ def render_pipeline_runner():
                 st.balloons()
 
     if not st.session_state.get('results') and not st.session_state.get('pipeline_running', False):
-        st.markdown("<p style='text-align: center; color: gray; margin-top: 2rem;'>No results yet - select jobs and run the pipeline to generate your application materials.</p>", unsafe_allow_html=True)
+        st.info("No results yet. Select jobs above and run the pipeline to generate your application materials.")
 
     if st.session_state.get('results'):
         st.header("Generated Application Materials")
@@ -115,10 +115,11 @@ def render_pipeline_runner():
             st.subheader(f"{result.get('job_title', 'Unknown')} - {result.get('department', 'Unknown')}")
             
             indicators = calculate_quality_indicators(result)
-            i1, i2, i3 = st.columns(3)
-            i1.info(f"Job Analysis Quality: **{indicators['analysis_quality']['label']}**")
-            i2.info(f"Resume Quality: **{indicators['resume_quality']['label']}**")
-            i3.info(f"Messaging Quality: **{indicators['messaging_quality']['label']}**")
+            i1, i2, i3, i4 = st.columns(4)
+            i1.info(f"Job Analysis: **{indicators['analysis_quality']['label']}**")
+            i2.info(f"Resume: **{indicators['resume_quality']['label']}**")
+            i3.info(f"Messaging: **{indicators['messaging_quality']['label']}**")
+            i4.info(f"Interview Prep: **{indicators['interview_prep_quality']['label']}**")
             
             tab1, tab2, tab3, tab4 = st.tabs(["Job Analysis", "Resume & Cover Letter", "LinkedIn Message", "Interview Prep"])
 
@@ -155,8 +156,16 @@ def render_pipeline_runner():
             with tab4:
                 display_interview = format_output_for_display(result.get('interview_prep', ''), 'analysis')
                 st.markdown(display_interview)
-                st.caption("Use these questions and answers to practise before your interview.")
-                
+                st.caption(f"Quality: {indicators['interview_prep_quality']['score']}/{indicators['interview_prep_quality']['max_score']} sections detected")
+                full_download = format_output_for_download(result, candidate_name)
+                st.download_button(
+                    label="Download All Materials (including Interview Prep)",
+                    data=full_download,
+                    file_name=f"jobcrew_{candidate_name.replace(' ', '_')}_{job_id}.txt",
+                    mime="text/plain",
+                    key=f"dl_interview_{job_id}"
+                )
+
         if st.button("Clear All Results"):
             st.session_state.results = {}
             st.rerun()

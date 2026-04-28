@@ -157,6 +157,24 @@ def score_messaging_output(output):
     passed = score >= 3
     return {"score": score, "max_score": 5, "missing_sections": missing, "passed": passed}
 
+def score_interview_prep_output(output):
+    headers = [
+        "## LIKELY INTERVIEW QUESTIONS",
+        "## SUGGESTED ANSWERS",
+        "## TECHNICAL TOPICS TO PREPARE",
+        "## BEHAVIOURAL COMPETENCIES",
+        "## RED FLAGS TO ADDRESS"
+    ]
+
+    missing = []
+    for header in headers:
+        if header not in output:
+            missing.append(header)
+
+    score = len(headers) - len(missing)
+    passed = score >= 4
+    return {"score": score, "max_score": 5, "missing_sections": missing, "passed": passed}
+
 def run_quality_tests():
     total_passed = 0
     
