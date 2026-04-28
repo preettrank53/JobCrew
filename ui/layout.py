@@ -55,10 +55,10 @@ def render_workflow_guide():
     if not st.session_state.get("candidate_profile"):
         col1, col2, col3, col4 = st.columns(4)
         with col1:
-            st.info("Step 1 — Fill your candidate profile in the sidebar")
+            st.info("Step 1 - Fill your candidate profile in the sidebar")
         with col2:
-            st.info("Step 2 — Search and select target job positions")
+            st.info("Step 2 - Search and select target job positions")
         with col3:
-            st.info("Step 3 — Run the pipeline to generate your resume and cover letter")
+            st.info("Step 3 - Run the pipeline to generate your resume and cover letter")
         with col4:
-            st.info("Step 4 — Review your interview preparation guide")
+            st.info("Step 4 - Review your interview preparation guide")
