@@ -65,7 +65,7 @@ DEMO_CANDIDATE = {
 DEMO_RESULTS = {
     "job_title": "Data Scientist (Healthcare Analytics)",
     "department": "Department of Veterans Affairs",
-    "execution_time_seconds": 47.3,
+    "execution_time_seconds": 62.1,
 
     "job_analysis": """\
 ## POSITION OVERVIEW
@@ -227,6 +227,100 @@ pipeline and ML work. Thank you again for your time.
 
 Best regards,
 Alex Johnson
+""",
+
+    "interview_prep": """\
+## LIKELY INTERVIEW QUESTIONS
+1. Can you walk us through how you built a data pipeline and what tools you used?
+2. Tell us about a machine learning model you built. How did you decide which algorithm to use?
+3. Have you worked with healthcare or clinical data before? What challenges did you face?
+4. How do you make sure your data is accurate and complete before using it for analysis?
+5. Describe a time when you had to explain a complex data result to someone who is not technical.
+6. How have you handled a situation where a model you built did not perform as expected?
+7. Have you worked in a federal or government environment? How did you manage compliance requirements?
+8. Tell us about a time you worked across different teams — like IT, clinical, and management — to deliver a project.
+
+## SUGGESTED ANSWERS
+1. Data pipeline question
+   - Situation: At the CDC, the team was processing health records from multiple state systems that came in different formats.
+   - Task: I needed to build a reliable pipeline that could handle 50 million records every week without errors.
+   - Action: I used Python with Pandas and Apache Airflow to automate the ingestion, cleaning, and loading steps. I added error logging at each stage so failures were easy to find and fix.
+   - Result: The pipeline ran every week without manual intervention. Data quality issues dropped by 60% in the first three months.
+
+2. Machine learning model question
+   - Situation: The CDC wanted a way to identify patients at high risk of sepsis early.
+   - Task: I had to choose and build a model that clinical staff could actually trust and use.
+   - Action: I tested three algorithms — logistic regression, random forest, and XGBoost. XGBoost performed best in cross-validation. I also used SHAP values to explain which features drove each prediction, so doctors could understand the output.
+   - Result: The model reached 87% sensitivity and was deployed across 12 regional health centers.
+
+3. Healthcare data question
+   - Situation: At Booz Allen Hamilton, I worked on a federal health client project with patient records that had missing values and inconsistent coding.
+   - Task: I needed to clean and standardize the data before any analysis could happen.
+   - Action: I mapped all diagnosis codes to a standard format, imputed missing values using median substitution for numerical fields, and flagged records with too many gaps for manual review.
+   - Result: The cleaned dataset reduced downstream errors in the analytics reports by 45%.
+
+4. Data quality question
+   - Situation: At MITRE, I found that some monthly reports had wrong numbers because source data was being updated after the extract was taken.
+   - Task: I needed to set up a process to catch these issues before the data reached the reports.
+   - Action: I built automated data quality checks in Python that compared record counts, checked for duplicate IDs, and validated value ranges against known limits. Any failure sent an alert before the pipeline completed.
+   - Result: Report errors were eliminated. Stakeholder trust in the data improved noticeably.
+
+5. Explaining complex results question
+   - Situation: At the CDC, senior leadership needed to understand why the sepsis model was flagging certain patient groups at higher rates.
+   - Task: I had to explain the model's findings without using technical language.
+   - Action: I created a simple one-page summary with charts showing which factors mattered most, using plain words like "older patients with two or more existing conditions are flagged more often because past data shows higher risk."
+   - Result: Leadership approved the model for wider rollout after that briefing. They said it was the clearest technical explanation they had received.
+
+6. Model underperformance question
+   - Situation: At Booz Allen, a text classification model I built was only getting 65% accuracy in production, even though it had 82% in testing.
+   - Task: I needed to find out why and fix it quickly.
+   - Action: I went back and found that the training data did not represent the actual variety of language used in the live documents. I collected more examples of the underrepresented categories and retrained the model.
+   - Result: Accuracy went up to 79% in production within two weeks.
+
+7. Federal compliance question
+   - Situation: At MITRE, all data work had to follow strict access controls and audit trail requirements.
+   - Task: I needed to make sure every step of my work was documented and traceable.
+   - Action: I kept detailed logs of every data transformation, stored all code in a version control system, and made sure no raw data ever left the secure environment.
+   - Result: The project passed an internal compliance audit with no findings.
+
+8. Cross-team collaboration question
+   - Situation: At the CDC, the sepsis model needed input from data engineers, clinical staff, and IT security before it could go live.
+   - Task: I had to coordinate all three groups who had very different priorities.
+   - Action: I set up weekly check-ins with each group separately, kept a shared document with open questions and decisions, and made sure clinical staff had final say on what the model output meant clinically.
+   - Result: The model went live on schedule. All three teams said the process was smooth.
+
+## TECHNICAL TOPICS TO PREPARE
+1. ETL pipeline design using Python — the job description specifically mentions data pipelines, so be ready to explain how you build, schedule, and monitor them.
+2. Machine learning model evaluation metrics — know precision, recall, F1, ROC-AUC and when to use each, because healthcare models must balance false positives and false negatives carefully.
+3. SQL for large datasets — the job requires SQL, so practice writing queries with joins, window functions, and aggregations on big tables.
+4. AWS services relevant to data science — SageMaker for model training and deployment, S3 for storage, Glue for ETL. The VA uses cloud infrastructure so this knowledge is directly relevant.
+5. Federal data governance basics — understand what HIPAA means for data handling, what an audit trail is, and why data lineage matters in a government environment.
+
+## BEHAVIOURAL COMPETENCIES
+1. Attention to data quality
+   The VA handles veteran health records where errors can affect real medical decisions. They want someone who checks their work carefully.
+   Example to prepare: Talk about the automated data quality checks you built at MITRE that eliminated report errors.
+
+2. Ability to communicate technical findings clearly
+   The role requires briefing senior leadership and working with non-technical clinical staff. This is explicitly listed in the job description.
+   Example to prepare: Talk about the one-page sepsis model summary you presented to CDC leadership that led to the rollout approval.
+
+3. Collaboration across different teams
+   The job involves working with clinical informatics teams, IT architects, and program officers — three very different groups.
+   Example to prepare: Talk about how you coordinated the CDC sepsis model rollout across data, clinical, and IT teams at the same time.
+
+## RED FLAGS TO ADDRESS
+1. You have not worked directly at the VA before
+   If asked: "You have not worked at the VA specifically — how quickly do you think you can get up to speed?"
+   Answer: "I have spent my entire career supporting federal health agencies — the CDC, Booz Allen Hamilton on federal contracts, and MITRE. I am already familiar with federal compliance requirements, government data governance, and the kind of careful, documented work that agencies like the VA expect. The domain shift from CDC health data to VA veteran data is a smaller step than it might appear."
+
+2. You may not have worked with VA-specific systems
+   If asked: "Are you familiar with the VA's internal data systems like CDW or VistA?"
+   Answer: "I have not worked with those systems directly, but I have worked with complex, mission-critical health data systems at the CDC. I learn new data environments quickly — in my first month at Booz Allen I had to ramp up on a client system I had never seen before and was contributing independently within three weeks."
+
+3. Your most recent role may not be at the GS-12 seniority level
+   If asked: "Can you give us examples of the kind of senior-level independent work this role requires?"
+   Answer: "At the CDC I led a team of six analysts and owned the full lifecycle of the sepsis model from design to deployment. I made technical decisions independently, managed stakeholder communication, and was accountable for the final output. That is the level of ownership I am ready to bring to this role."
 """,
 }
 

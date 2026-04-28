@@ -54,7 +54,7 @@ def deactivate_demo_mode():
 
 def run_demo_pipeline(status_container) -> dict:
     """
-    Simulates the three-agent CrewAI pipeline with realistic timing.
+    Simulates the four-agent CrewAI pipeline with realistic timing.
     Writes progress steps to status_container and stores results in session state.
 
     Returns the DEMO_RESULTS dictionary.
@@ -71,6 +71,10 @@ def run_demo_pipeline(status_container) -> dict:
         st.write("Messaging Agent is drafting your LinkedIn outreach...")
         time.sleep(2)
         st.write("LinkedIn message and follow-up drafted.")
+        time.sleep(1)
+        st.write("Interview Prep Agent is building your interview guide...")
+        time.sleep(2)
+        st.write("Interview preparation guide ready.")
         time.sleep(1)
 
     st.session_state.results[DEMO_JOB["job_id"]] = DEMO_RESULTS

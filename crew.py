@@ -1,8 +1,8 @@
 import time
 import concurrent.futures
 from crewai import Crew, Process
-from agents import create_job_analyzer_agent, create_resume_customizer_agent, create_messaging_agent
-from tasks import create_job_analysis_task, create_resume_task, create_messaging_task
+from agents import create_job_analyzer_agent, create_resume_customizer_agent, create_messaging_agent, create_interview_prep_agent
+from tasks import create_job_analysis_task, create_resume_task, create_messaging_task, create_interview_prep_task
 from config.settings import PIPELINE_TIMEOUT_SECONDS
 from config.llm import get_user_llm
 from demo.demo_controller import is_demo_mode
@@ -19,6 +19,7 @@ def run_jobcrew_pipeline(job_data, candidate_profile, fast_mode=False):
     job_analyzer = create_job_analyzer_agent(fast_mode=fast_mode, llm=user_llm)
     resume_customizer = create_resume_customizer_agent(fast_mode=fast_mode, llm=user_llm)
     messaging_agent = create_messaging_agent(fast_mode=fast_mode, llm=user_llm)
+    interview_prep_agent = create_interview_prep_agent(fast_mode=fast_mode, llm=user_llm)
     
     # Step 2: Instantiate tasks in order
     task1 = create_job_analysis_task(agent=job_analyzer, job_data=job_data)
@@ -32,15 +33,22 @@ def run_jobcrew_pipeline(job_data, candidate_profile, fast_mode=False):
     task2.context = [task1]
     
     task3 = create_messaging_task(
-        agent=messaging_agent, 
-        job_data=job_data, 
+        agent=messaging_agent,
+        job_data=job_data,
         candidate_profile=candidate_profile
     )
+
+    task4 = create_interview_prep_task(
+        agent=interview_prep_agent,
+        job_analysis_output="See provided context",
+        candidate_profile=candidate_profile
+    )
+    task4.context = [task1]
     
     # Step 3: Create a Crew instance
     crew = Crew(
-        agents=[job_analyzer, resume_customizer, messaging_agent],
-        tasks=[task1, task2, task3],
+        agents=[job_analyzer, resume_customizer, messaging_agent, interview_prep_agent],
+        tasks=[task1, task2, task3, task4],
         verbose=True,
         process=Process.sequential
     )
@@ -65,11 +73,13 @@ def run_jobcrew_pipeline(job_data, candidate_profile, fast_mode=False):
     job_analysis = task1.output.raw if task1.output else "No output generated"
     resume_and_cover_letter = task2.output.raw if task2.output else "No output generated"
     linkedin_message = task3.output.raw if task3.output else "No output generated"
+    interview_prep = task4.output.raw if task4.output else "No output generated"
     
     return {
         "job_analysis": job_analysis,
         "resume_and_cover_letter": resume_and_cover_letter,
         "linkedin_message": linkedin_message,
+        "interview_prep": interview_prep,
         "job_title": job_data.get("title", "Unknown Title"),
         "department": job_data.get("department", "Unknown Department"),
         "execution_time_seconds": execution_time_seconds

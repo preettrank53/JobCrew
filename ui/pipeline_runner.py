@@ -120,18 +120,18 @@ def render_pipeline_runner():
             i2.info(f"Resume Quality: **{indicators['resume_quality']['label']}**")
             i3.info(f"Messaging Quality: **{indicators['messaging_quality']['label']}**")
             
-            tab1, tab2, tab3 = st.tabs(["Job Analysis", "Resume & Cover Letter", "LinkedIn Message"])
-            
+            tab1, tab2, tab3, tab4 = st.tabs(["Job Analysis", "Resume & Cover Letter", "LinkedIn Message", "Interview Prep"])
+
             with tab1:
                 display_analysis = format_output_for_display(result.get('job_analysis', ''), 'analysis')
                 st.markdown(display_analysis)
                 st.caption(f"Quality: {indicators['analysis_quality']['score']}/{indicators['analysis_quality']['max_score']} sections detected")
-                
+
             with tab2:
                 display_resume = format_output_for_display(result.get('resume_and_cover_letter', ''), 'resume')
                 st.markdown(display_resume)
                 st.caption(f"Quality: {indicators['resume_quality']['score']}/{indicators['resume_quality']['max_score']} checks passed")
-                
+
                 full_download = format_output_for_download(result, candidate_name)
                 st.download_button(
                     label="Download All Materials",
@@ -140,17 +140,22 @@ def render_pipeline_runner():
                     mime="text/plain",
                     key=f"dl_all_{job_id}"
                 )
-                
+
             with tab3:
                 display_msg = format_output_for_display(result.get('linkedin_message', ''), 'messaging')
                 st.markdown(display_msg)
                 st.caption(f"Quality: {indicators['messaging_quality']['score']}/{indicators['messaging_quality']['max_score']} checks passed")
-                
+
                 if st.button("Copy to Clipboard", key=f"copy_{job_id}"):
                     safe_msg = display_msg.replace('\\', '\\\\').replace('`', '\\`').replace('$', '\\$')
                     js = f"<script>navigator.clipboard.writeText(`{safe_msg}`);</script>"
                     components.html(js, height=0, width=0)
                     st.success("Copied to clipboard!")
+
+            with tab4:
+                display_interview = format_output_for_display(result.get('interview_prep', ''), 'analysis')
+                st.markdown(display_interview)
+                st.caption("Use these questions and answers to practise before your interview.")
                 
         if st.button("Clear All Results"):
             st.session_state.results = {}
