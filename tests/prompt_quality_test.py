@@ -159,21 +159,32 @@ def score_messaging_output(output):
 
 def score_interview_prep_output(output):
     headers = [
-        "## LIKELY INTERVIEW QUESTIONS",
-        "## SUGGESTED ANSWERS",
-        "## TECHNICAL TOPICS TO PREPARE",
-        "## BEHAVIOURAL COMPETENCIES",
-        "## RED FLAGS TO ADDRESS"
+        "## INTERVIEW PREPARATION REPORT",
+        "## TECHNICAL QUESTIONS (3)",
+        "## BEHAVIORAL QUESTIONS (3)",
+        "## SITUATIONAL QUESTIONS (2)",
+        "## ROLE-SPECIFIC QUESTIONS (2)",
+        "## INTERVIEW STRATEGY SUMMARY"
     ]
-
+    
     missing = []
     for header in headers:
         if header not in output:
             missing.append(header)
-
-    score = len(headers) - len(missing)
-    passed = score >= 4
-    return {"score": score, "max_score": 5, "missing_sections": missing, "passed": passed}
+            
+    # Count questions
+    question_count = output.count("### Question")
+    if question_count < 8:
+        missing.append(f"QUESTION COUNT ({question_count} < 8)")
+        
+    # Check STAR format present in behavioral section
+    if "- Situation:" not in output:
+        missing.append("STAR FORMAT missing (- Situation:)")
+        
+    score = 8 - len(missing)
+    if score < 0: score = 0
+    passed = score >= 6
+    return {"score": score, "max_score": 8, "missing_sections": missing, "passed": passed}
 
 def run_quality_tests():
     total_passed = 0
@@ -189,8 +200,9 @@ def run_quality_tests():
             ja_score = score_job_analysis_output(results.get("job_analysis", ""))
             res_score = score_resume_output(results.get("resume_and_cover_letter", ""))
             msg_score = score_messaging_output(results.get("linkedin_message", ""))
+            prep_score = score_interview_prep_output(results.get("interview_prep", ""))
             
-            job_passed = ja_score['passed'] and res_score['passed'] and msg_score['passed']
+            job_passed = ja_score['passed'] and res_score['passed'] and msg_score['passed'] and prep_score['passed']
             if job_passed:
                 total_passed += 1
                 
@@ -202,6 +214,9 @@ def run_quality_tests():
             
             print(f"Messaging Agent: {msg_score['score']}/{msg_score['max_score']} [{'PASS' if msg_score['passed'] else 'FAIL'}]")
             if msg_score['missing_sections']: print(f"  Failed checks: {msg_score['missing_sections']}")
+            
+            print(f"Interview Prep: {prep_score['score']}/{prep_score['max_score']} [{'PASS' if prep_score['passed'] else 'FAIL'}]")
+            if prep_score['missing_sections']: print(f"  Failed checks: {prep_score['missing_sections']}")
             
             print(f"OVERALL JOB {idx+1} STATUS: {'PASS' if job_passed else 'FAIL'}")
             

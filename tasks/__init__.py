@@ -7,5 +7,5 @@ __all__ = [
     "create_job_analysis_task",
     "create_resume_task",
     "create_messaging_task",
-    "create_interview_prep_task"
+    "create_interview_prep_task",
 ]

@@ -172,13 +172,15 @@ def render_tracker_dashboard():
             with st.expander(f"Viewing: {detail_app.get('job_title')} — {detail_app.get('department')}", expanded=True):
                 st.markdown(f"**Candidate:** {detail_app.get('candidate_name')} | **Generated:** {detail_app.get('generated_at')} | **Job ID:** {detail_app.get('job_id')} | **Size:** {detail_app.get('file_size_kb')} KB")
                 
-                tab1, tab2, tab3 = st.tabs(["Job Analysis", "Resume & Cover Letter", "LinkedIn Message"])
+                tab1, tab2, tab3, tab4 = st.tabs(["Job Analysis", "Resume & Cover Letter", "LinkedIn Message", "Interview Prep"])
                 with tab1:
                     st.markdown(format_output_for_display(detail_app.get('job_analysis', ''), 'analysis'))
                 with tab2:
                     st.markdown(format_output_for_display(detail_app.get('resume_and_cover_letter', ''), 'resume'))
                 with tab3:
                     st.markdown(format_output_for_display(detail_app.get('linkedin_message', ''), 'messaging'))
+                with tab4:
+                    st.markdown(format_output_for_display(detail_app.get('interview_prep', ''), 'interview_prep'))
                 
                 with open(detail_app['file_path'], 'r', encoding='utf-8') as f:
                     file_content = f.read()

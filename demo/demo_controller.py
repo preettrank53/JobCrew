@@ -54,7 +54,7 @@ def deactivate_demo_mode():
 
 def run_demo_pipeline(status_container) -> dict:
     """
-    Simulates the four-agent CrewAI pipeline with realistic timing.
+    Simulates the three-agent CrewAI pipeline with realistic timing.
     Writes progress steps to status_container and stores results in session state.
 
     Returns the DEMO_RESULTS dictionary.
@@ -72,9 +72,9 @@ def run_demo_pipeline(status_container) -> dict:
         time.sleep(2)
         st.write("LinkedIn message and follow-up drafted.")
         time.sleep(1)
-        st.write("Interview Prep Agent is building your interview guide...")
+        st.write("Interview Prep Coach is generating personalized questions...")
         time.sleep(2)
-        st.write("Interview preparation guide ready.")
+        st.write("10 interview questions with answer frameworks generated")
         time.sleep(1)
 
     st.session_state.results[DEMO_JOB["job_id"]] = DEMO_RESULTS
@@ -88,7 +88,7 @@ def run_demo_pipeline(status_container) -> dict:
 def get_demo_banner_html() -> str:
     """
     Returns the demo mode notice as a plain string.
-    Callers should pass this to st.warning() — no custom HTML or CSS used.
+    Callers should pass this to st.warning() - no custom HTML or CSS used.
     """
     return (
         "Demo Mode — You are viewing pre-generated sample outputs. "

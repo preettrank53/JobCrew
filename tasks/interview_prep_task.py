@@ -1,52 +1,68 @@
 from crewai import Task
 
-
-def create_interview_prep_task(agent, job_analysis_output, candidate_profile):
+def create_interview_prep_task(agent, job_analysis_output, candidate_profile, job_data):
     return Task(
-        description=f"""Read the job analysis and the candidate profile below.
-Write a practical interview preparation guide in simple, easy-to-understand English.
-Do not use complicated words. Write as if you are helping a friend prepare for their interview.
+        description=f"""
+Review the following job analysis, candidate profile, and job details carefully.
 
-Produce output in exactly these five sections:
+Job Title: {job_data.get('title')}
+Department: {job_data.get('department')}
+Job Description: {job_data.get('description')}
 
-## LIKELY INTERVIEW QUESTIONS
-Write 8 questions the interviewer will most likely ask, based on the job requirements.
-Make the questions specific to this role, not generic questions like "tell me about yourself".
-
-## SUGGESTED ANSWERS
-For each of the 8 questions above, write a short answer guide using the STAR method:
-- Situation: what was happening
-- Task: what the candidate needed to do
-- Action: what steps the candidate took
-- Result: what happened because of those actions
-Use the candidate's actual experience from their profile to make the answers real and specific.
-Keep each answer guide short and easy to remember.
-
-## TECHNICAL TOPICS TO PREPARE
-List 5 technical areas the candidate should study or review before the interview.
-For each topic, write one sentence explaining why this topic is important for this specific job.
-Keep it simple and actionable.
-
-## BEHAVIOURAL COMPETENCIES
-List 3 key qualities the employer is looking for based on the job description.
-For each quality, write one example story from the candidate's background that shows this quality.
-Keep the examples short and clear.
-
-## RED FLAGS TO ADDRESS
-Identify 2 to 3 possible weak points or gaps in the candidate's profile that the interviewer might ask about.
-For each gap, write a short, honest, and confident way to answer if the interviewer brings it up.
-Do not suggest the candidate lie. Help them frame the truth in a positive way.
-
-Job Analysis:
+Job Analysis Output:
 {job_analysis_output}
 
 Candidate Profile:
-{candidate_profile}
+Name: {candidate_profile.get('name')}
+Experience: {candidate_profile.get('experience')}
+Skills: {candidate_profile.get('skills')}
+Education: {candidate_profile.get('education')}
+
+Your task is to generate exactly 10 interview questions distributed across these four categories:
+1. 3 Technical/Skills questions based on the mandatory requirements and critical keywords from the job analysis.
+2. 3 Behavioral questions using the STAR method based on the key responsibilities from the job analysis.
+3. 2 Situational questions based on culture and environment signals from the job analysis.
+4. 2 Role-specific questions that only someone who carefully read this exact job posting would ask.
+
+For each question, generate a personalized answer framework that:
+- Uses the candidate's actual experience, skills, and background — not generic advice.
+- References specific details from their work history where relevant.
+- Follows STAR format for behavioral questions.
+- Gives concrete talking points not vague suggestions.
+
+CRITICAL INSTRUCTION: Do not invent experience not present in the candidate profile — only use what is actually there.
 """,
-        expected_output=(
-            "A structured interview preparation guide with all five sections fully filled in, "
-            "written in simple and clear English. Each section must have real, specific content "
-            "based on the job and the candidate — no generic advice."
-        ),
+        expected_output="""\
+## INTERVIEW PREPARATION REPORT
+## TECHNICAL QUESTIONS (3)
+### Question 1: [question text]
+**Why they ask this:** [one sentence]
+**Your Answer Framework:** [personalized framework using candidate's actual experience]
+**Key Points to Hit:** [3 bullet points]
+### Question 2: ...
+### Question 3: ...
+## BEHAVIORAL QUESTIONS (3)
+### Question 4: [question text]
+**Why they ask this:** [one sentence]
+**STAR Framework:**
+- Situation: [specific situation from candidate's background]
+- Task: [what they were responsible for]
+- Action: [specific actions they took]
+- Result: [quantifiable outcome if possible]
+### Question 5: ...
+### Question 6: ...
+## SITUATIONAL QUESTIONS (2)
+### Question 7: [question text]
+**Why they ask this:** [one sentence]
+**Suggested Approach:** [how to frame the answer given this department's culture]
+### Question 8: ...
+## ROLE-SPECIFIC QUESTIONS (2)
+### Question 9: [question text]
+**Why they ask this:** [one sentence]
+**Key Points to Hit:** [2-3 bullet points]
+### Question 10: ...
+## INTERVIEW STRATEGY SUMMARY
+[3-4 sentences on overall positioning strategy for this specific role and department]
+""",
         agent=agent
     )

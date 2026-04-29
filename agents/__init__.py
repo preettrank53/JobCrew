@@ -7,5 +7,5 @@ __all__ = [
     "create_job_analyzer_agent",
     "create_resume_customizer_agent",
     "create_messaging_agent",
-    "create_interview_prep_agent"
+    "create_interview_prep_agent",
 ]

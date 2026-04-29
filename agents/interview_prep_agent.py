@@ -1,30 +1,26 @@
 from crewai import Agent
-from config.llm import get_llm, get_fast_llm
-from config.settings import MAX_AGENT_ITERATIONS, MAX_AGENT_RPM
-
+from config.llm import get_user_llm
 
 def create_interview_prep_agent(fast_mode=False, llm=None):
-    agent_llm = llm if llm else (get_fast_llm() if fast_mode else get_llm())
-    agent_max_iter = 2 if fast_mode else MAX_AGENT_ITERATIONS
+    if llm is None:
+        try:
+            llm = get_user_llm(fast_mode=fast_mode)
+        except Exception:
+            from config.llm import llm as fallback_llm
+            llm = fallback_llm
 
     return Agent(
-        role="Senior Interview Coach",
-        goal=(
-            "Generate a clear and practical interview preparation guide based on the job "
-            "requirements and the candidate's background, so the candidate knows exactly "
-            "what to say and how to say it in the interview."
-        ),
+        role="Senior Technical Interview Coach and Career Strategist",
+        goal="Analyze job requirements alongside the candidate's background to generate highly specific, realistic interview questions with personalized answer frameworks that give the candidate a genuine competitive advantage in interviews for this exact role",
         backstory=(
-            "You have 10 years of experience coaching people for government and private "
-            "sector job interviews. You know the STAR method inside out — Situation, Task, "
-            "Action, Result. You write in simple, clear English so candidates can easily "
-            "remember and use your advice. You focus on what actually helps people get "
-            "selected, not on generic tips they can find anywhere."
+            "You are a former hiring manager with 12 years of experience across federal agencies and private sector tech companies. "
+            "You have conducted over 800 technical interviews, know exactly what interviewers at each department type are looking for, "
+            "and specialize in helping candidates turn their existing experience into compelling, confident interview answers using structured storytelling frameworks."
         ),
         verbose=True,
         allow_delegation=False,
-        llm=agent_llm,
         memory=False,
-        max_iter=agent_max_iter,
-        max_rpm=MAX_AGENT_RPM
+        llm=llm,
+        max_iter=2 if fast_mode else 3,
+        max_rpm=10
     )
