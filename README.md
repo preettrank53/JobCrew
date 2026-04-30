@@ -8,13 +8,14 @@ AI-Powered Job Application Assistant - Built with CrewAI, LangChain & Groq
 
 ## [Live Demo : jobcrew.streamlit.app](https://jobcrew.streamlit.app)
 
-JobCrew is an intelligent, multi-agent AI system designed to streamline the federal job application process. By leveraging advanced large language models via Groq, it automates the tedious tasks of job analysis, resume tailoring, and outreach preparation. This tool is built for career-driven individuals targeting federal positions who need high-quality, ATS-optimized application materials generated in seconds.
+JobCrew is an intelligent, multi-agent AI system designed to streamline the federal job application process. By leveraging advanced large language models via Groq, it automates the tedious tasks of job analysis, resume tailoring, outreach drafting, and interview preparation. This tool is built for career-driven individuals targeting federal positions who need high-quality, ATS-optimized application materials and personalized interview guidance generated in seconds.
 
 ## Key Features
 * live job fetching
 * AI multi-agent pipeline
 * resume upload auto-fill
 * one-click material generation
+* personalized interview prep generation
 * application tracker with status management
 * persistent logging
 
@@ -33,9 +34,11 @@ USAJobs API → Job Listings → User Selection
                         │  Resume Agent       │
                         │         ↓           │
                         │   Messaging Agent   │
+                        │         ↓           │
+                        │Interview Prep Coach │
                         └─────────────────────┘
                                     ↓
-                  Resume + Cover Letter + LinkedIn Message
+        Resume + Cover Letter + LinkedIn Message + Interview Prep
 ```
 
 ## Tech Stack
@@ -102,6 +105,7 @@ JobCrew/
 | Job Analyzer | Senior Federal Job Analyst | Requirements extraction | Structured Job Analysis |
 | Resume Agent | Executive Resume Tailor | Content tailoring | Tailored Resume & Cover Letter |
 | Messaging Agent | Networking Specialist | Outreach personalization | LinkedIn Message |
+| Interview Prep Coach | Senior Technical Interview Coach | Interview preparation | Interview Prep Report |
 
 ## Deployment
 
