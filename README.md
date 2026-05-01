@@ -8,7 +8,7 @@ AI-Powered Job Application Assistant - Built with CrewAI, LangChain & Groq
 
 ## [Live Demo : jobcrew.streamlit.app](https://jobcrew.streamlit.app)
 
-JobCrew is an intelligent, multi-agent AI system designed to streamline the federal job application process. By leveraging advanced large language models via Groq, it automates the tedious tasks of job analysis, resume tailoring, outreach drafting, and interview preparation. This tool is built for career-driven individuals targeting federal positions who need high-quality, ATS-optimized application materials and personalized interview guidance generated in seconds.
+JobCrew is an intelligent, multi-agent AI system designed to streamline the federal job application process. By leveraging advanced large language models via Groq, it automates the tedious tasks of job analysis, resume tailoring, outreach drafting, interview preparation, and skills gap analysis. This tool is built for career-driven individuals targeting federal positions who need high-quality, ATS-optimized application materials, personalized interview guidance, and tailored learning roadmaps generated in seconds.
 
 ## Key Features
 * live job fetching
@@ -22,7 +22,7 @@ JobCrew is an intelligent, multi-agent AI system designed to streamline the fede
 
 ## Architecture
 
-The JobCrew pipeline uses a multi-agent system to handle the complex workflow of job application preparation. By delegating specific responsibilities to specialized agents, the system ensures that each phase of the process—from requirement extraction to document generation—is handled with high precision and contextual awareness.
+The JobCrew pipeline uses a multi-agent system to handle the complex workflow of job application preparation. By delegating specific responsibilities to specialized agents, the system ensures that each phase of the process—from requirement extraction to document generation and gap analysis—is handled with high precision and contextual awareness.
 
 ```
 USAJobs API → Job Listings → User Selection
@@ -35,7 +35,7 @@ USAJobs API → Job Listings → User Selection
                         │  Resume Agent       │
                         │         ↓           │
                         │   Messaging Agent   │
-                        │         ↓           │                        │                     │
+                        │         ↓           │
                         │Interview Prep Coach │
                         │         ↓           │
                         │ Skills Gap Analyzer │
