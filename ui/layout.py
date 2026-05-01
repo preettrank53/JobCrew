@@ -43,13 +43,15 @@ def initialize_session_state():
 
 def render_demo_banner():
     """Renders the demo-mode notice when Demo Mode is active."""
-    from demo.demo_controller import is_demo_mode, get_demo_banner_html
+    from demo.demo_controller import is_demo_mode, get_demo_banner_html, deactivate_demo_mode
     if is_demo_mode():
         st.warning(get_demo_banner_html())
         st.info(
             "This is a demo with sample data. To use your real resume and real jobs, "
             "exit demo mode and add your Groq API key - it is free at console.groq.com"
         )
+        if st.button("Exit Demo Mode (Return to Live App)", key="main_exit_demo_btn", type="primary"):
+            deactivate_demo_mode()
 
 def render_workflow_guide():
     if not st.session_state.get("candidate_profile"):
