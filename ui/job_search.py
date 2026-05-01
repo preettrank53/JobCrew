@@ -82,7 +82,24 @@ def _render_job_listings():
         title = job.get("title", "Unknown Title")
         department = job.get("department", "Unknown Department")
 
-        with st.expander(f"{department} - {title}"):
+        display_title = f"{department} - {title}"
+        if "results" in st.session_state and job_id in st.session_state.results:
+            result = st.session_state.results[job_id]
+            skills_gap = result.get("skills_gap", "")
+            if skills_gap and skills_gap != "No output generated":
+                import re
+                match = re.search(r"Overall Fit Score:\s*([\d]+)/10", skills_gap, re.IGNORECASE)
+                if match:
+                    score = int(match.group(1))
+                    if score >= 8:
+                        badge = "🟢 Strong Match"
+                    elif score >= 5:
+                        badge = "🟡 Partial Match"
+                    else:
+                        badge = "🔴 Weak Match"
+                    display_title = f"{department} - {title} | {badge} ({score}/10)"
+
+        with st.expander(display_title):
             c1, c2 = st.columns(2)
             with c1:
                 st.write(f"**Department:** {department}")

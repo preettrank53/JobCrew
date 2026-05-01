@@ -172,7 +172,7 @@ def render_tracker_dashboard():
             with st.expander(f"Viewing: {detail_app.get('job_title')} — {detail_app.get('department')}", expanded=True):
                 st.markdown(f"**Candidate:** {detail_app.get('candidate_name')} | **Generated:** {detail_app.get('generated_at')} | **Job ID:** {detail_app.get('job_id')} | **Size:** {detail_app.get('file_size_kb')} KB")
                 
-                tab1, tab2, tab3, tab4 = st.tabs(["Job Analysis", "Resume & Cover Letter", "LinkedIn Message", "Interview Prep"])
+                tab1, tab2, tab3, tab4, tab5 = st.tabs(["Job Analysis", "Resume & Cover Letter", "LinkedIn Message", "Interview Prep", "Skills Gap"])
                 with tab1:
                     st.markdown(format_output_for_display(detail_app.get('job_analysis', ''), 'analysis'))
                 with tab2:
@@ -180,7 +180,15 @@ def render_tracker_dashboard():
                 with tab3:
                     st.markdown(format_output_for_display(detail_app.get('linkedin_message', ''), 'messaging'))
                 with tab4:
-                    st.markdown(format_output_for_display(detail_app.get('interview_prep', ''), 'interview_prep'))
+                    if detail_app.get('interview_prep'):
+                        st.markdown(format_output_for_display(detail_app.get('interview_prep', ''), 'interview_prep'))
+                    else:
+                        st.info("Interview Prep was not generated for this application (or older log format).")
+                with tab5:
+                    if detail_app.get('skills_gap'):
+                        st.markdown(format_output_for_display(detail_app.get('skills_gap', ''), 'skills_gap'))
+                    else:
+                        st.info("Skills Gap Analysis was not generated for this application (or older log format).")
                 
                 with open(detail_app['file_path'], 'r', encoding='utf-8') as f:
                     file_content = f.read()

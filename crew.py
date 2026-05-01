@@ -7,10 +7,10 @@ from config.settings import PIPELINE_TIMEOUT_SECONDS
 from config.llm import get_user_llm
 from demo.demo_controller import is_demo_mode
 
-def run_jobcrew_pipeline(job_data, candidate_profile, fast_mode=False, include_interview_prep=True):
+def run_jobcrew_pipeline(job_data, candidate_profile, fast_mode=False, include_interview_prep=True, include_skills_gap=True):
     # Safety guard: prevent real API calls during demo sessions
     if is_demo_mode():
-        raise RuntimeError("Pipeline called in demo mode — use run_demo_pipeline instead")
+        raise RuntimeError("Pipeline called in demo mode - use run_demo_pipeline instead")
 
     # Step 1: Resolve the user LLM (raises ValueError if no key is configured)
     user_llm = get_user_llm(fast_mode=fast_mode)
@@ -51,13 +51,33 @@ def run_jobcrew_pipeline(job_data, candidate_profile, fast_mode=False, include_i
         )
         task4.context = [task1]
         
-        agents_list = [job_analyzer, resume_customizer, messaging_agent, interview_prep_agent]
-        tasks_list = [task1, task2, task3, task4]
-    else:
-        agents_list = [job_analyzer, resume_customizer, messaging_agent]
-        tasks_list = [task1, task2, task3]
+    # Step 4: Optional Skills Gap Task
+    if include_skills_gap:
+        from agents.skills_gap_agent import create_skills_gap_agent
+        from tasks.skills_gap_task import create_skills_gap_task
         
-    # Step 4: Create a Crew instance
+        skills_gap_agent = create_skills_gap_agent(fast_mode=fast_mode, llm=user_llm)
+        task5 = create_skills_gap_task(
+            agent=skills_gap_agent,
+            job_analysis_output="See provided context",
+            candidate_profile=candidate_profile,
+            job_data=job_data
+        )
+        task5.context = [task1]
+
+    agents_list = [job_analyzer, resume_customizer, messaging_agent]
+    if include_interview_prep:
+        agents_list.append(interview_prep_agent)
+    if include_skills_gap:
+        agents_list.append(skills_gap_agent)
+        
+    tasks_list = [task1, task2, task3]
+    if include_interview_prep:
+        tasks_list.append(task4)
+    if include_skills_gap:
+        tasks_list.append(task5)
+        
+    # Step 5: Create a Crew instance
     crew = Crew(
         agents=agents_list,
         tasks=tasks_list,
@@ -86,12 +106,14 @@ def run_jobcrew_pipeline(job_data, candidate_profile, fast_mode=False, include_i
     resume_and_cover_letter = task2.output.raw if task2.output else "No output generated"
     linkedin_message = task3.output.raw if task3.output else "No output generated"
     interview_prep = task4.output.raw if (include_interview_prep and task4.output) else "No output generated"
+    skills_gap = task5.output.raw if (include_skills_gap and task5.output) else "No output generated"
     
     return {
         "job_analysis": job_analysis,
         "resume_and_cover_letter": resume_and_cover_letter,
         "linkedin_message": linkedin_message,
         "interview_prep": interview_prep,
+        "skills_gap": skills_gap,
         "job_title": job_data.get("title", "Unknown Title"),
         "department": job_data.get("department", "Unknown Department"),
         "execution_time_seconds": execution_time_seconds

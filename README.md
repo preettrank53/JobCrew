@@ -16,6 +16,7 @@ JobCrew is an intelligent, multi-agent AI system designed to streamline the fede
 * resume upload auto-fill
 * one-click material generation
 * personalized interview prep generation
+* skills gap analysis and learning roadmaps
 * application tracker with status management
 * persistent logging
 
@@ -34,11 +35,13 @@ USAJobs API → Job Listings → User Selection
                         │  Resume Agent       │
                         │         ↓           │
                         │   Messaging Agent   │
-                        │         ↓           │
+                        │         ↓           │                        │                     │
                         │Interview Prep Coach │
+                        │         ↓           │
+                        │ Skills Gap Analyzer │
                         └─────────────────────┘
                                     ↓
-        Resume + Cover Letter + LinkedIn Message + Interview Prep
+        Resume + Cover Letter + LinkedIn Message + Interview Prep + Skills Gap
 ```
 
 ## Tech Stack
@@ -106,6 +109,7 @@ JobCrew/
 | Resume Agent | Executive Resume Tailor | Content tailoring | Tailored Resume & Cover Letter |
 | Messaging Agent | Networking Specialist | Outreach personalization | LinkedIn Message |
 | Interview Prep Coach | Senior Technical Interview Coach | Interview preparation | Interview Prep Report |
+| Skills Gap Analyzer | Senior Career Development Advisor | Skills gap analysis | Skills Gap Report |
 
 ## Deployment
 
