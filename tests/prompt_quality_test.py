@@ -186,6 +186,33 @@ def score_interview_prep_output(output):
     passed = score >= 6
     return {"score": score, "max_score": 8, "missing_sections": missing, "passed": passed}
 
+def score_skills_gap_output(output):
+    headers = [
+        "## SKILLS GAP ANALYSIS REPORT",
+        "## QUICK MATCH SUMMARY",
+        "## YOUR COMPETITIVE ADVANTAGES",
+        "## CRITICAL GAPS",
+        "## IMPORTANT GAPS",
+        "## MINOR GAPS",
+        "## LEARNING ROADMAP",
+        "## HONEST ASSESSMENT"
+    ]
+    
+    missing = []
+    for header in headers:
+        if header not in output:
+            missing.append(header)
+            
+    # Check for overall fit score
+    if "Overall Fit Score:" not in output:
+        missing.append("FIT SCORE missing")
+        
+    max_score = len(headers) + 1
+    score = max_score - len(missing)
+    if score < 0: score = 0
+    passed = score >= 7
+    return {"score": score, "max_score": max_score, "missing_sections": missing, "passed": passed}
+
 def run_quality_tests():
     total_passed = 0
     
@@ -201,8 +228,9 @@ def run_quality_tests():
             res_score = score_resume_output(results.get("resume_and_cover_letter", ""))
             msg_score = score_messaging_output(results.get("linkedin_message", ""))
             prep_score = score_interview_prep_output(results.get("interview_prep", ""))
+            gap_score = score_skills_gap_output(results.get("skills_gap", ""))
             
-            job_passed = ja_score['passed'] and res_score['passed'] and msg_score['passed'] and prep_score['passed']
+            job_passed = ja_score['passed'] and res_score['passed'] and msg_score['passed'] and prep_score['passed'] and gap_score['passed']
             if job_passed:
                 total_passed += 1
                 
@@ -217,6 +245,9 @@ def run_quality_tests():
             
             print(f"Interview Prep: {prep_score['score']}/{prep_score['max_score']} [{'PASS' if prep_score['passed'] else 'FAIL'}]")
             if prep_score['missing_sections']: print(f"  Failed checks: {prep_score['missing_sections']}")
+            
+            print(f"Skills Gap Analyzer: {gap_score['score']}/{gap_score['max_score']} [{'PASS' if gap_score['passed'] else 'FAIL'}]")
+            if gap_score['missing_sections']: print(f"  Failed checks: {gap_score['missing_sections']}")
             
             print(f"OVERALL JOB {idx+1} STATUS: {'PASS' if job_passed else 'FAIL'}")
             
