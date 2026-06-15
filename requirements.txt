@@ -1,0 +1,37 @@
+# Core Frameworks
+langgraph
+langchain
+langchain-core
+langchain-groq
+langchain-google-genai
+langchain-openai
+langchain-community
+
+# Observability & Monitoring
+langsmith
+sentry-sdk
+
+# Database & Storage
+chromadb
+supabase
+pysqlite3-binary; sys_platform == 'linux' # For ChromaDB compatibility on some Linux envs if needed
+
+# Schema & Configuration
+pydantic>=2.0
+pydantic-settings
+
+# Logging & Utilities
+structlog
+rich
+tenacity
+httpx
+
+# Document Processing
+pypdf
+pdfplumber
+
+# MCP (Model Context Protocol)
+mcp
+
+# User Interface
+streamlit

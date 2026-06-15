@@ -1,0 +1,42 @@
+# Environment variables & local configuration
+.env
+.env.*
+!.env.example
+
+# Python virtual environments
+venv/
+.venv/
+env/
+ENV/
+pyvenv.cfg
+.python-version
+
+# Python caches and bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Databases & local persistent storage
+*.db
+*.sqlite
+*.sqlite3
+chroma_data/
+.chroma/
+
+# Logs & monitoring
+*.log
+logs/
+
+# Testing & Coverage
+.coverage
+htmlcov/
+.pytest_cache/
+.tox/
+
+# IDE settings
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
